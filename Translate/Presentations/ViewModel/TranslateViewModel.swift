@@ -16,11 +16,36 @@ struct TranslateViewModel {
     
     // viewModel -> view
     let sourceLabelText: Driver<String>
+    let languageList: Driver<[LanguageType]>
+    
+    // view -> viewModel
+    let tapLanguageButton = BehaviorRelay<String>(value:"")
+    let sourceLanguage = PublishRelay<String>()
+    let targetLanguage = PublishRelay<String>()
     
     init() {
         sourceLabelText = sourceTextViewModel
             .documentData
             .asDriver(onErrorJustReturn: "driver 이상해")
+        
+        let languageAllCases = Observable.just(LanguageType.allCases)
+        
+        languageList = tapLanguageButton
+            .filter({$0 != ""})
+            .withLatestFrom(languageAllCases)
+            .map{ $0 }
+            .asDriver(onErrorJustReturn: [])
+        
+//        sourceLanguage
+//            .subscribe({
+//                print("source: \($0)")
+//            })
+//
+//        targetLanguage
+//            .subscribe({
+//                print("target: \($0)")
+//            })
+        
     }
     
 }

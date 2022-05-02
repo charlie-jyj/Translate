@@ -10,14 +10,14 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-protocol SourceTextViewDelegate {
+protocol SourceTextViewDelegate: AnyObject {
     func submitSourceText(source: String)
 }
 
 class SourceTextViewController: UIViewController {
     
     private let placeholderText = "텍스트 입력"
-    var delegate: SourceTextViewDelegate?
+    private weak var delegate: SourceTextViewDelegate?
     var viewModel: SourceTextViewModel?
     let disposeBag = DisposeBag()
     
@@ -37,9 +37,19 @@ class SourceTextViewController: UIViewController {
         layout()
     }
     
+    init(delegate: SourceTextViewDelegate?) {
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     func bind(_ viewModel: SourceTextViewModel){
         self.viewModel = viewModel
         
+        // textview 에 text가 입력될 때마다 bind
         textView.rx.text
             .bind(to: viewModel.sourceTextViewContent)
             .disposed(by: disposeBag)

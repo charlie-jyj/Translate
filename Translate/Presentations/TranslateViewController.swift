@@ -14,6 +14,7 @@ class TranslateViewController: UIViewController {
     
     let viewModel = TranslateViewModel()
     let disposeBag = DisposeBag()
+    let sourcePlaceholderText = "텍스트 입력"
     
     private lazy var sourceButton: UIButton = {
         let button = UIButton()
@@ -22,6 +23,7 @@ class TranslateViewController: UIViewController {
         button.setTitle("한국어", for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15.0, weight: .semibold)
+        button.addTarget(self, action: #selector(didTapSourceButton), for: .touchUpInside)
         return button
     }()
     
@@ -32,6 +34,7 @@ class TranslateViewController: UIViewController {
         button.setTitle("영어", for: .normal)
         button.setTitleColor(.label, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 15.0, weight: .semibold)
+        button.addTarget(self, action: #selector(didTapTargetButton), for: .touchUpInside)
         return button
     }()
     
@@ -69,8 +72,8 @@ class TranslateViewController: UIViewController {
     private lazy var sourceTextLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
-        label.text = "텍스트 입력"
-        label.textColor = .tertiaryLabel  //TODO: sourceLabel에 입력 값 추가 시 style 해제
+        label.text = sourcePlaceholderText
+        label.textColor = .tertiaryLabel
         label.font = UIFont.systemFont(ofSize: 23, weight: .semibold)
         return label
     }()
@@ -101,6 +104,9 @@ class TranslateViewController: UIViewController {
         viewModel.sourceLabelText
             .drive(self.rx.presentText)
             .disposed(by: disposeBag)
+        viewModel.languageList
+            .drive(self.rx.presentAlertViewController)
+            .disposed(by: disposeBag)
     }
     
     private func attribute(){
@@ -116,16 +122,29 @@ class TranslateViewController: UIViewController {
     }
     
     @objc func didTapSourceBaseView() {
-        let vc = SourceTextViewController()
-        vc.delegate = self
+        let vc = SourceTextViewController(delegate: self)
         vc.bind(viewModel.sourceTextViewModel)
         present(vc, animated: true, completion: nil)
     }
     
     func presentSourceText(source: String) {
-        sourceTextLabel.text = source
-        sourceTextLabel.textColor = .label
+        if source != "" {
+            sourceTextLabel.text = source
+            sourceTextLabel.textColor = .label
+        } else {
+            sourceTextLabel.text = sourcePlaceholderText
+            sourceTextLabel.textColor = .tertiaryLabel
+        }
     }
+    
+    func setSourceButtonText(from text: String) {
+        sourceButton.setTitle(text, for: .normal)
+    }
+    
+    func setTargetButtonText(from text:String) {
+        targetButton.setTitle(text, for: .normal)
+    }
+    
     
 }
 
@@ -201,12 +220,52 @@ extension TranslateViewController: SourceTextViewDelegate {
 //        sourceTextLabel.text = source
 //        sourceTextLabel.textColor = .label
     }
+    
+    @objc func didTapSourceButton() {
+        Observable.just("source")
+            .bind(to: viewModel.tapLanguageButton)
+            .disposed(by: disposeBag)
+    }
+    
+    @objc func didTapTargetButton() {
+        Observable.just("target")
+            .bind(to: viewModel.tapLanguageButton)
+            .disposed(by: disposeBag)
+    }
 }
 
 extension Reactive where Base: TranslateViewController {
     var presentText: Binder<String> {
         return Binder(base) { base, text in
             base.presentSourceText(source: text)
+        }
+    }
+    
+    var presentAlertViewController: Binder<[LanguageType]> {
+        return Binder(base) { base, languageList in
+            let alertViewController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let callback: ((UIAlertAction)->Void)  = { action in
+                let buttonType = base.viewModel.tapLanguageButton.value
+                
+                if buttonType == "source" {
+                    base.setSourceButtonText(from: action.title!)
+                    Observable.just(action.title!)
+                        .bind(to: base.viewModel.sourceLanguage)
+                        .disposed(by: base.disposeBag)
+                } else if buttonType == "target" {
+                    base.setTargetButtonText(from: action.title!)
+                    Observable.just(action.title!)
+                        .bind(to: base.viewModel.targetLanguage)
+                        .disposed(by: base.disposeBag)
+                }
+            }
+            
+            languageList.forEach {
+                let action = UIAlertAction(title: $0.rawValue, style: .destructive, handler: callback)
+                alertViewController.addAction(action)
+            }
+            
+            base.present(alertViewController, animated: true, completion: nil)
         }
     }
 }
