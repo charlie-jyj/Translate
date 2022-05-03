@@ -8,6 +8,12 @@
 import RxSwift
 import RxCocoa
 
+
+struct LanguageOption {
+    let type: String
+    let title: String
+}
+
 struct TranslateViewModel {
     let disposeBag = DisposeBag()
   
@@ -16,17 +22,19 @@ struct TranslateViewModel {
     
     // viewModel -> view
     let sourceLabelText: Driver<String>
-    let languageList: Driver<[LanguageType]>
+    let languageList: Signal<[LanguageType]>
+    let changeLanguageButton: Signal<LanguageOption>
     
     // view -> viewModel
-    let tapLanguageButton = BehaviorRelay<String>(value:"")
-    let sourceLanguage = PublishRelay<String>()
-    let targetLanguage = PublishRelay<String>()
+    let tapLanguageButton = PublishRelay<String>()
+    let tapAlertActionSheetLanguage = PublishRelay<String>()
+    let sourceLanguage = BehaviorRelay<LanguageType>(value:.Korean)
+    let targetLanguage = BehaviorRelay<LanguageType>(value: .English)
     
     init() {
         sourceLabelText = sourceTextViewModel
             .documentData
-            .asDriver(onErrorJustReturn: "driver 이상해")
+            .asDriver(onErrorJustReturn: "source label fill error")
         
         let languageAllCases = Observable.just(LanguageType.allCases)
         
@@ -34,8 +42,14 @@ struct TranslateViewModel {
             .filter({$0 != ""})
             .withLatestFrom(languageAllCases)
             .map{ $0 }
-            .asDriver(onErrorJustReturn: [])
+            .asSignal(onErrorJustReturn: [])
         
+        changeLanguageButton = Observable
+            .combineLatest(tapLanguageButton, tapAlertActionSheetLanguage) { first, last in
+                LanguageOption(type: first, title: last)
+            }
+            .asSignal(onErrorJustReturn: LanguageOption(type: "source", title: "korean"))
+            
         sourceLanguage
             .subscribe({
                 print("source: \($0)")

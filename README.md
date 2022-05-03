@@ -71,3 +71,41 @@ textView.attributedText = text
     view.addGestureRecognizer(tap)
 ```
 
+#### BehaviorRelay
+
+```swift
+    let sourceLanguage = BehaviorRelay<LanguageType>(value:.Korean)
+    let targetLanguage = BehaviorRelay<LanguageType>(value: .English)
+    
+    sourceLanguage
+    .subscribe({
+        print("source: \($0)")
+    })
+
+    targetLanguage
+        .subscribe({
+            print("target: \($0)")
+        })
+
+```
+
+- 기본 value를 buffer에 주고 subscribe를 하면 
+- 처음의 기본값부터 구독되어 next(Korean), next(English) 이벤트를 받게된다. 
+- language에 기본값을 주고 싶어서 사용했다.
+- 그 외의 경우에는 PublishRelay를 사용했다.
+
+#### Signal vs Binder
+
+- 현재는 혼재해서 사용하고 있는데..
+- Signal은 새로운 구독자에게 replay 하지 않는다
+- Binder는 새로운 구독자에게 초기값 또는 최신 값을 전달한다.
+
+```swift
+    // viewModel -> view
+    let sourceLabelText: Driver<String>
+    let languageList: Driver<[LanguageType]> => Signal로 수정
+    let changeLanguageButton: Signal<LanguageOption>
+```
+
+- sourceLabelText는 text를 label에 뿌려주고, 이 값으로 network를 해야하기 때문에, 새로운 구독자를 염두에 두고 driver를 사용하는 것이 적당할 것 같고
+- 이 외에는 Signal을 사용하는 것이 맞을 듯 하다.
