@@ -3,7 +3,11 @@
 
 ## 번역 기능을 가진 App 만들기
 
-### 구현 
+### 구현 목표
+
+1. 입력한 텍스트를 번역한다. (진행중)
+2. 음성을 실시간으로 텍스트화 하고 그 텍스트를 번역한다.
+3. 음성을 텍스트로 번역하고 번역된 결과를 핸드폰이 읽어준다. 
 
 
 #### iOS
@@ -107,5 +111,5 @@ textView.attributedText = text
     let changeLanguageButton: Signal<LanguageOption>
 ```
 
-- sourceLabelText는 text를 label에 뿌려주고, 이 값으로 network를 해야하기 때문에, 새로운 구독자를 염두에 두고 driver를 사용하는 것이 적당할 것 같고
-- 이 외에는 Signal을 사용하는 것이 맞을 듯 하다.
+- sourceLabelText는 text를 label에 뿌려주고, 이 값으로 network 통신을 해야하기 때문에, 새로운 구독자를 염두에 두고 driver를 사용하는 것이 적당할 것으로 보인다.
+- 이 외에는 Signal을 사용하였다.
