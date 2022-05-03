@@ -36,15 +36,15 @@ struct TranslateViewModel {
             .map{ $0 }
             .asDriver(onErrorJustReturn: [])
         
-//        sourceLanguage
-//            .subscribe({
-//                print("source: \($0)")
-//            })
-//
-//        targetLanguage
-//            .subscribe({
-//                print("target: \($0)")
-//            })
+        sourceLanguage
+            .subscribe({
+                print("source: \($0)")
+            })
+
+        targetLanguage
+            .subscribe({
+                print("target: \($0)")
+            })
         
     }
     
