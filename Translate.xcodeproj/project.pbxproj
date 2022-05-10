@@ -23,7 +23,15 @@
 		6A1769FB281A58C0004AF6C8 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 6A1769FA281A58C0004AF6C8 /* RxSwift */; };
 		6A1769FD281A5912004AF6C8 /* TranslateViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1769FC281A5912004AF6C8 /* TranslateViewModel.swift */; };
 		6A176A00281A5D73004AF6C8 /* SourceTextViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1769FF281A5D73004AF6C8 /* SourceTextViewModel.swift */; };
-		6A9175B1281FAC5900E010A2 /* LanguageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A9175B0281FAC5900E010A2 /* LanguageType.swift */; };
+		6A9175B1281FAC5900E010A2 /* ButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A9175B0281FAC5900E010A2 /* ButtonStyle.swift */; };
+		6AE78FBE2828D0DE00A05115 /* Translator.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FBC2828D0DE00A05115 /* Translator.xcdatamodeld */; };
+		6AE78FC12828D1AD00A05115 /* Bookmark+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FBF2828D1AD00A05115 /* Bookmark+CoreDataClass.swift */; };
+		6AE78FC22828D1AD00A05115 /* Bookmark+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FC02828D1AD00A05115 /* Bookmark+CoreDataProperties.swift */; };
+		6AE78FC52828D3BB00A05115 /* BookmarkListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FC42828D3BB00A05115 /* BookmarkListHeader.swift */; };
+		6AE78FC72828D3C800A05115 /* BookmarkListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FC62828D3C800A05115 /* BookmarkListCell.swift */; };
+		6AE9324D2825041B00FBF607 /* LanguageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE9324C2825041B00FBF607 /* LanguageType.swift */; };
+		6AE932522828AC3300FBF607 /* TabBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE932512828AC3300FBF607 /* TabBarViewModel.swift */; };
+		6AE932542828AD0200FBF607 /* BookmarkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE932532828AD0200FBF607 /* BookmarkViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +49,15 @@
 		6A1769F3281A2EA5004AF6C8 /* SourceTextViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceTextViewController.swift; sourceTree = "<group>"; };
 		6A1769FC281A5912004AF6C8 /* TranslateViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslateViewModel.swift; sourceTree = "<group>"; };
 		6A1769FF281A5D73004AF6C8 /* SourceTextViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceTextViewModel.swift; sourceTree = "<group>"; };
-		6A9175B0281FAC5900E010A2 /* LanguageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageType.swift; sourceTree = "<group>"; };
+		6A9175B0281FAC5900E010A2 /* ButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyle.swift; sourceTree = "<group>"; };
+		6AE78FBD2828D0DE00A05115 /* Translator.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Translator.xcdatamodel; sourceTree = "<group>"; };
+		6AE78FBF2828D1AD00A05115 /* Bookmark+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bookmark+CoreDataClass.swift"; sourceTree = "<group>"; };
+		6AE78FC02828D1AD00A05115 /* Bookmark+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bookmark+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		6AE78FC42828D3BB00A05115 /* BookmarkListHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkListHeader.swift; sourceTree = "<group>"; };
+		6AE78FC62828D3C800A05115 /* BookmarkListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkListCell.swift; sourceTree = "<group>"; };
+		6AE9324C2825041B00FBF607 /* LanguageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageType.swift; sourceTree = "<group>"; };
+		6AE932512828AC3300FBF607 /* TabBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarViewModel.swift; sourceTree = "<group>"; };
+		6AE932532828AD0200FBF607 /* BookmarkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,11 +99,11 @@
 				6A1769D12819224C004AF6C8 /* AppDelegate.swift */,
 				6A1769F1281A25B7004AF6C8 /* UIColor+.swift */,
 				6A1769D32819224C004AF6C8 /* SceneDelegate.swift */,
+				6AE932492825031500FBF607 /* Model */,
 				6A1769EC281931A4004AF6C8 /* Presentations */,
 				6A1769DA2819224D004AF6C8 /* Assets.xcassets */,
 				6A1769DC2819224D004AF6C8 /* LaunchScreen.storyboard */,
 				6A1769DF2819224D004AF6C8 /* Info.plist */,
-				6A9175B0281FAC5900E010A2 /* LanguageType.swift */,
 			);
 			path = Translate;
 			sourceTree = "<group>";
@@ -97,7 +113,7 @@
 			children = (
 				6A1769D52819224C004AF6C8 /* TabBarController.swift */,
 				6A1769ED281931F5004AF6C8 /* TranslateViewController.swift */,
-				6A1769EF28193217004AF6C8 /* BookmarkViewController.swift */,
+				6AE78FC32828D39F00A05115 /* CollectionView */,
 				6A1769F3281A2EA5004AF6C8 /* SourceTextViewController.swift */,
 				6A1769FE281A5D57004AF6C8 /* ViewModel */,
 			);
@@ -109,8 +125,32 @@
 			children = (
 				6A1769FC281A5912004AF6C8 /* TranslateViewModel.swift */,
 				6A1769FF281A5D73004AF6C8 /* SourceTextViewModel.swift */,
+				6AE932512828AC3300FBF607 /* TabBarViewModel.swift */,
+				6AE932532828AD0200FBF607 /* BookmarkViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		6AE78FC32828D39F00A05115 /* CollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				6A1769EF28193217004AF6C8 /* BookmarkViewController.swift */,
+				6AE78FC42828D3BB00A05115 /* BookmarkListHeader.swift */,
+				6AE78FC62828D3C800A05115 /* BookmarkListCell.swift */,
+			);
+			path = CollectionView;
+			sourceTree = "<group>";
+		};
+		6AE932492825031500FBF607 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				6A9175B0281FAC5900E010A2 /* ButtonStyle.swift */,
+				6AE9324C2825041B00FBF607 /* LanguageType.swift */,
+				6AE78FBF2828D1AD00A05115 /* Bookmark+CoreDataClass.swift */,
+				6AE78FC02828D1AD00A05115 /* Bookmark+CoreDataProperties.swift */,
+				6AE78FBC2828D0DE00A05115 /* Translator.xcdatamodeld */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -195,14 +235,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6AE932522828AC3300FBF607 /* TabBarViewModel.swift in Sources */,
 				6A1769D62819224C004AF6C8 /* TabBarController.swift in Sources */,
 				6A1769EE281931F5004AF6C8 /* TranslateViewController.swift in Sources */,
 				6A176A00281A5D73004AF6C8 /* SourceTextViewModel.swift in Sources */,
-				6A9175B1281FAC5900E010A2 /* LanguageType.swift in Sources */,
+				6A9175B1281FAC5900E010A2 /* ButtonStyle.swift in Sources */,
 				6A1769D22819224C004AF6C8 /* AppDelegate.swift in Sources */,
 				6A1769D42819224C004AF6C8 /* SceneDelegate.swift in Sources */,
+				6AE78FC22828D1AD00A05115 /* Bookmark+CoreDataProperties.swift in Sources */,
+				6AE78FBE2828D0DE00A05115 /* Translator.xcdatamodeld in Sources */,
+				6AE78FC72828D3C800A05115 /* BookmarkListCell.swift in Sources */,
+				6AE78FC12828D1AD00A05115 /* Bookmark+CoreDataClass.swift in Sources */,
+				6AE9324D2825041B00FBF607 /* LanguageType.swift in Sources */,
 				6A1769F028193217004AF6C8 /* BookmarkViewController.swift in Sources */,
 				6A1769FD281A5912004AF6C8 /* TranslateViewModel.swift in Sources */,
+				6AE78FC52828D3BB00A05115 /* BookmarkListHeader.swift in Sources */,
+				6AE932542828AD0200FBF607 /* BookmarkViewModel.swift in Sources */,
 				6A1769F4281A2EA5004AF6C8 /* SourceTextViewController.swift in Sources */,
 				6A1769F2281A25B7004AF6C8 /* UIColor+.swift in Sources */,
 			);
@@ -471,6 +519,19 @@
 			productName = RxSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		6AE78FBC2828D0DE00A05115 /* Translator.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				6AE78FBD2828D0DE00A05115 /* Translator.xcdatamodel */,
+			);
+			currentVersion = 6AE78FBD2828D0DE00A05115 /* Translator.xcdatamodel */;
+			path = Translator.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 6A1769C62819224C004AF6C8 /* Project object */;
 }

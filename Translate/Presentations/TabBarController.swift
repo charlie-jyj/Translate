@@ -6,15 +6,20 @@
 //
 
 import UIKit
+import CoreData
 
 class TabBarController: UITabBarController {
+    
+    let viewModel = TabBarViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let translateViewController = TranslateViewController()
-        let bookmarkViewController = BookmarkViewController()
-        
+        let bookmarkViewController = BookmarkViewController(collectionViewLayout: UICollectionViewFlowLayout())
+        translateViewController.bind(viewModel.translateViewModel)
+        bookmarkViewController.bind(viewModel.bookmarkViewModel)
+       
         translateViewController.tabBarItem = UITabBarItem(
             title: "번역",
             image: UIImage(systemName: "mic"),
@@ -31,7 +36,7 @@ class TabBarController: UITabBarController {
         
         tabBar.backgroundColor = .secondarySystemBackground
     }
-
+    
 
 }
 

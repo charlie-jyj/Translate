@@ -9,13 +9,13 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import CoreData
 
-class TranslateViewController: UIViewController {
-    
-    let viewModel = TranslateViewModel()
+class TranslateViewController: UIViewController, SourceTextViewDelegate {
+   
+    var viewModel: TranslateViewModel!
     let disposeBag = DisposeBag()
     let sourcePlaceholderText = "텍스트 입력"
-    //var languageButtonTitle: String = ""
     
     private lazy var sourceButton: UIButton = {
         let button = UIButton()
@@ -94,16 +94,16 @@ class TranslateViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         definesPresentationContext = true
-        bind(viewModel)
         attribute()
         layout()
     }
     
-    private func bind(_ viewModel: TranslateViewModel){
+    func bind(_ model: TranslateViewModel){
+        viewModel = model
         viewModel.sourceLabelText
             .drive(self.rx.presentText)
             .disposed(by: disposeBag)
-        
+         
         viewModel.languageList
             .emit(to: self.rx.presentAlertViewController)
             .disposed(by: disposeBag)
@@ -127,44 +127,10 @@ class TranslateViewController: UIViewController {
         targetButton.setTitle(viewModel.targetLanguage.value.title, for: .normal)
     }
     
-    @objc func didTapSourceBaseView() {
-        let vc = SourceTextViewController(delegate: self)
-        vc.bind(viewModel.sourceTextViewModel)
-        present(vc, animated: true, completion: nil)
+    func submitSourceText(source: String) {
+        // delegate pattern => rxSwift 로 대체
     }
     
-    func presentSourceText(source: String) {
-        if source != "" {
-            sourceTextLabel.text = source
-            sourceTextLabel.textColor = .label
-        } else {
-            sourceTextLabel.text = sourcePlaceholderText
-            sourceTextLabel.textColor = .tertiaryLabel
-        }
-    }
-    
-    func setSourceButtonText(from text: String) {
-        if let type = LanguageType.allCases.filter({ $0.rawValue == text}).first {
-            sourceButton.setTitle(type.title, for: .normal)
-            Observable.just(type)
-                .bind(to: viewModel.sourceLanguage)
-                .disposed(by: disposeBag)
-        }
-        
-    }
-    
-    func setTargetButtonText(from text:String) {
-        if let type = LanguageType.allCases.filter({ $0.rawValue == text}).first {
-            targetButton.setTitle(type.title, for: .normal)
-            Observable.just(type)
-                .bind(to: viewModel.targetLanguage)
-                .disposed(by: disposeBag)
-        }
-    }
-    
-}
-
-private extension TranslateViewController {
     private func layout() {
         let defaultSpacing: CGFloat = 16.0
         
@@ -226,34 +192,59 @@ private extension TranslateViewController {
             $0.leading.equalTo(resultTextLabel.snp.leading)
             $0.trailing.equalTo(resultTextLabel.snp.trailing)
         }
-        
-        
+    }
+    
+    // rx 관련 함수들
+    func presentSourceText(source: String) {
+        if source != "" {
+            sourceTextLabel.text = source
+            sourceTextLabel.textColor = .label
+        } else {
+            sourceTextLabel.text = sourcePlaceholderText
+            sourceTextLabel.textColor = .tertiaryLabel
+        }
+    }
+    
+    func setSourceButtonText(from language: LanguageType) {
+        sourceButton.setTitle(language.title, for: .normal)
+        Observable.just(language)
+            .bind(to: viewModel.sourceLanguage)
+            .disposed(by: disposeBag)
+    }
+    
+    func setTargetButtonText(from language: LanguageType) {
+        targetButton.setTitle(language.title, for: .normal)
+        Observable.just(language)
+            .bind(to: viewModel.targetLanguage)
+            .disposed(by: disposeBag)
     }
 }
 
-extension TranslateViewController: SourceTextViewDelegate {
-    func submitSourceText(source: String) {
-//        sourceTextLabel.text = source
-//        sourceTextLabel.textColor = .label
+extension TranslateViewController {
+    
+    // 이벤트 리스너 함수
+    @objc func didTapSourceBaseView() {
+        let vc = SourceTextViewController(delegate: self)
+        vc.bind(viewModel.sourceTextViewModel)
+        present(vc, animated: true, completion: nil)
     }
     
     @objc func didTapSourceButton() {
-        Observable.just("source")
+        Observable.just(ButtonType.source)
             .bind(to: viewModel.tapLanguageButton)
             .disposed(by: disposeBag)
     }
     
     @objc func didTapTargetButton() {
-        Observable.just("target")
+        Observable.just(ButtonType.target)
             .bind(to: viewModel.tapLanguageButton)
             .disposed(by: disposeBag)
     }
-}
-
-extension Reactive where Base: UIAlertAction {
+    
     
 }
 
+// rx 확장
 extension Reactive where Base: TranslateViewController {
     var presentText: Binder<String> {
         return Binder(base) { base, text in
@@ -261,12 +252,12 @@ extension Reactive where Base: TranslateViewController {
         }
     }
     
-    var changeLanguageButton: Binder<LanguageOption> {
-        return Binder(base) { base, option in
-            if option.type == "source" {
-                base.setSourceButtonText(from: option.title)
-            } else if option.type == "target" {
-                base.setTargetButtonText(from: option.title)
+    var changeLanguageButton: Binder<ButtonStyle> {
+        return Binder(base) { base, buttonStyle in
+            if buttonStyle.type == .source {
+                base.setSourceButtonText(from: buttonStyle.label)
+            } else if buttonStyle.type == .target {
+                base.setTargetButtonText(from: buttonStyle.label)
             }
         }
     }
@@ -276,12 +267,13 @@ extension Reactive where Base: TranslateViewController {
             let alertViewController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             
             let callback: ((UIAlertAction)->Void)  = { action in
-                //base.languageButtonTitle = action.title!
-                Observable.just(action.title!)
+                guard let language = LanguageType.allCases.filter({ $0.rawValue == action.title}).first else { return }
+                Observable.just(language)
                     .bind(to: base.viewModel.tapAlertActionSheetLanguage)
                     .disposed(by: base.disposeBag)
             }
             
+            // language type의 rawValue => action의 title
             languageList.forEach {
                 let action = UIAlertAction(title: $0.rawValue, style: .default, handler: callback)
                 alertViewController.addAction(action)
