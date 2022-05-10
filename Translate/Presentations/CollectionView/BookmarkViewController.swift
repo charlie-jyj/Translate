@@ -20,6 +20,30 @@ class BookmarkViewController: UICollectionViewController {
             "sourceLanguage":"Korean",
             "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
             "targetLanguage": "English",
+            "targetText": "Where is this hotel? what kind of transportation I can take? and I need more long setence to know if the cell scroll is working or not: I think there is the right property to controll the scroll vertically or horizontally then I should looking out all over the place"
+            ],
+            [
+            "sourceLanguage":"Korean",
+            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
+            "targetLanguage": "English",
+            "targetText": "Where is this hotel? what kind of transportation I can take?"
+            ],
+            [
+            "sourceLanguage":"Korean",
+            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
+            "targetLanguage": "English",
+            "targetText": "Where is this hotel? what kind of transportation I can take?"
+            ],
+            [
+            "sourceLanguage":"Korean",
+            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
+            "targetLanguage": "English",
+            "targetText": "Where is this hotel? what kind of transportation I can take?"
+            ],
+            [
+            "sourceLanguage":"Korean",
+            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
+            "targetLanguage": "English",
             "targetText": "Where is this hotel? what kind of transportation I can take?"
             ],
             [
@@ -85,17 +109,17 @@ class BookmarkViewController: UICollectionViewController {
         //1. item
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = .init(top: 8.0, leading: 0.0, bottom: 8.0, trailing: 0.0)
+        item.contentInsets = .init(top: 8.0, leading: 16.0, bottom: 8.0, trailing: 16.0)
         
         // 2. group
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalHeight(0.9))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 4)
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalHeight(0.75))
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 2)
         //let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
         
         // 3. section
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = .init(top: 16.0, leading: 16.0, bottom: 0.0, trailing: 16.0)
+        section.contentInsets = .init(top: 24.0, leading: 16.0, bottom: 0.0, trailing: 16.0)
         
         // 4. header
         let header = createSectionHeader()
@@ -119,7 +143,7 @@ extension BookmarkViewController {
     
     // section 별 item 수
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return 6
     }
     
     // cell 내용 결정

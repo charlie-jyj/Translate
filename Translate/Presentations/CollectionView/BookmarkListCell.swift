@@ -14,8 +14,13 @@ class BookmarkListCell: UICollectionViewCell {
         let stack = UIStackView()
         stack.alignment = .leading
         stack.axis = .vertical
-        stack.distribution = .equalSpacing
+        stack.spacing = 10
         return stack
+    }()
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        return scrollView
     }()
     
     private lazy var sourceLanguageLabel: UILabel = {
@@ -73,13 +78,20 @@ class BookmarkListCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 5
         contentView.clipsToBounds = true
         
-        contentView.addSubview(stackView)
+        contentView.addSubview(scrollView)
+        
+        scrollView.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(16)
+            $0.bottom.equalToSuperview().inset(16)
+            $0.leading.equalToSuperview().inset(16)
+            $0.width.equalToSuperview().inset(16)
+        }
+        
+        scrollView.addSubview(stackView)
         
         stackView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(16)
-            $0.leading.equalToSuperview().inset(16)
-            $0.trailing.equalToSuperview().inset(16)
-            $0.bottom.equalToSuperview().inset(16)
+            $0.top.bottom.equalTo(scrollView)
+            $0.width.equalTo(scrollView.snp.width)
         }
         
         [

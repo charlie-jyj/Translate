@@ -155,12 +155,22 @@ Terminating app due to uncaught exception 'NSInvalidArgumentException', reason: 
 
 ###### error3
 
-=> collection view의 cell 이 눈에 보이지 않는 현상
+```
+collection view의 cell 이 눈에 보이지 않는 현상
+```
 - stackView에 constraint 주기
-- 눈에 보이지만 찌그러져있다.
+- NSCollectionLayoutItem.contentInsets 조정
+- NSCollectionLayoutGroup.vertical vs horizontal
+- NSCollectionLayoutSection.orthogonalScrollingBehavior
+    - .continuous vs .group paging
+    
 
-
-
+###### error 4
+```
+item의 content가 잘리는 현상
+```
+- scroll view 안에 stack view를 집어넣는다.
+- stack view width = scroll view width 여야 vertical scroll 
 
 ### A-ha 
 
