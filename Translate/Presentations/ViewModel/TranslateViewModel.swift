@@ -11,7 +11,6 @@ import CoreData
 
 struct TranslateViewModel {
     
-    var container: NSPersistentContainer!
     let disposeBag = DisposeBag()
   
     //subViewModels

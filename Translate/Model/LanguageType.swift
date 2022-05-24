@@ -13,6 +13,13 @@ enum LanguageType: String, CaseIterable, Identifiable, Codable {
     case Japanese
     case Spanish
     
+    enum CondingKeys: String, CodingKey {
+        case English = "en"
+        case Korean = "ko"
+        case Japanese = "ja"
+        case Spanish = "es"
+    }
+    
     var id: String {
         return self.rawValue
     }

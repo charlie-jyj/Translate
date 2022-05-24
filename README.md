@@ -111,6 +111,11 @@ textView.attributedText = text
 - Invalid redeclaration error
 <https://stackoverflow.com/questions/40410169/invalid-redeclaration-on-coredata-classes>
 
+- Core Data files
+    - Editor > Create NSManagedObjectSubclass 
+    - Bookmark+CoreDataClass.swift: the Xcode generated subclass of NSManagedObject
+    - Bookmark+CoreDataProperties.swift: extension that contains all of its attributes and provides an entity-specific class method for creating a fetch request
+
 
 ##### 3. CollectionView
 

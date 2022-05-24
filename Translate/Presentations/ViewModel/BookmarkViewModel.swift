@@ -12,7 +12,6 @@ import CoreData
 
 struct BookmarkViewModel {
     
-    var container: NSPersistentContainer!
     let disposeBag = DisposeBag()
     
 }

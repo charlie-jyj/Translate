@@ -10,7 +10,7 @@ import CoreData
 
 class TabBarController: UITabBarController {
     
-    let viewModel = TabBarViewModel()
+    let viewModel = CoreDataViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
