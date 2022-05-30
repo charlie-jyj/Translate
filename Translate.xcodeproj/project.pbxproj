@@ -13,6 +13,9 @@
 		6A0F8598284097B30014D037 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0F8597284097B30014D037 /* NotificationService.swift */; };
 		6A0F859C284097B30014D037 /* NotificationExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 6A0F8595284097B30014D037 /* NotificationExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		6A0F85A2284098DE0014D037 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 6A0F85A1284098DE0014D037 /* FirebaseMessaging */; };
+		6A0F85A72844911D0014D037 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0F85A62844911D0014D037 /* Message.swift */; };
+		6A0F85A9284499360014D037 /* JSONDefaultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0F85A8284499360014D037 /* JSONDefaultWrapper.swift */; };
+		6A0F85AC2844A8730014D037 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A0F85AB2844A8730014D037 /* Constants.swift */; };
 		6A1769D22819224C004AF6C8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1769D12819224C004AF6C8 /* AppDelegate.swift */; };
 		6A1769D42819224C004AF6C8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1769D32819224C004AF6C8 /* SceneDelegate.swift */; };
 		6A1769D62819224C004AF6C8 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A1769D52819224C004AF6C8 /* TabBarController.swift */; };
@@ -71,6 +74,9 @@
 		6A0F8595284097B30014D037 /* NotificationExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0F8597284097B30014D037 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		6A0F8599284097B30014D037 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6A0F85A62844911D0014D037 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		6A0F85A8284499360014D037 /* JSONDefaultWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONDefaultWrapper.swift; sourceTree = "<group>"; };
+		6A0F85AB2844A8730014D037 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6A1769CE2819224C004AF6C8 /* Translate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Translate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A1769D12819224C004AF6C8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6A1769D32819224C004AF6C8 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -139,6 +145,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6A0F85AA2844A7E30014D037 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				6A0F85A8284499360014D037 /* JSONDefaultWrapper.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		6A1769C52819224C004AF6C8 = {
 			isa = PBXGroup;
 			children = (
@@ -167,6 +181,8 @@
 				6A1769D12819224C004AF6C8 /* AppDelegate.swift */,
 				6A1769F1281A25B7004AF6C8 /* UIColor+.swift */,
 				6A1769D32819224C004AF6C8 /* SceneDelegate.swift */,
+				6A0F85AB2844A8730014D037 /* Constants.swift */,
+				6A0F85AA2844A7E30014D037 /* Util */,
 				6AE932492825031500FBF607 /* Model */,
 				6A1769EC281931A4004AF6C8 /* Presentations */,
 				6A1769DA2819224D004AF6C8 /* Assets.xcassets */,
@@ -218,6 +234,7 @@
 				6AE9324C2825041B00FBF607 /* LanguageType.swift */,
 				6A9AF3D6283C9F6400AFBA00 /* BookmarkItems.xcdatamodeld */,
 				6A9AF3D9283CA8F800AFBA00 /* Bookmark.swift */,
+				6A0F85A62844911D0014D037 /* Message.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -350,6 +367,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6AE932522828AC3300FBF607 /* CoreDataViewModel.swift in Sources */,
+				6A0F85AC2844A8730014D037 /* Constants.swift in Sources */,
 				6A1769D62819224C004AF6C8 /* TabBarController.swift in Sources */,
 				6A1769EE281931F5004AF6C8 /* TranslateViewController.swift in Sources */,
 				6A176A00281A5D73004AF6C8 /* SourceTextViewModel.swift in Sources */,
@@ -357,6 +375,7 @@
 				6A9175B1281FAC5900E010A2 /* ButtonStyle.swift in Sources */,
 				6A9AF3DA283CA8F800AFBA00 /* Bookmark.swift in Sources */,
 				6A1769D22819224C004AF6C8 /* AppDelegate.swift in Sources */,
+				6A0F85A9284499360014D037 /* JSONDefaultWrapper.swift in Sources */,
 				6A1769D42819224C004AF6C8 /* SceneDelegate.swift in Sources */,
 				6AE78FC72828D3C800A05115 /* BookmarkListCell.swift in Sources */,
 				6AE9324D2825041B00FBF607 /* LanguageType.swift in Sources */,
@@ -366,6 +385,7 @@
 				6A1769FD281A5912004AF6C8 /* TranslateViewModel.swift in Sources */,
 				6AE78FC52828D3BB00A05115 /* BookmarkListHeader.swift in Sources */,
 				6AE932542828AD0200FBF607 /* BookmarkViewModel.swift in Sources */,
+				6A0F85A72844911D0014D037 /* Message.swift in Sources */,
 				6A1769F4281A2EA5004AF6C8 /* SourceTextViewController.swift in Sources */,
 				6A1769F2281A25B7004AF6C8 /* UIColor+.swift in Sources */,
 			);

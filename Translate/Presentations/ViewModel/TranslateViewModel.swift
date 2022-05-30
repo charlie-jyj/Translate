@@ -8,6 +8,7 @@
 import RxSwift
 import RxCocoa
 import CoreData
+import Alamofire
 
 struct TranslateViewModel {
     
@@ -18,6 +19,7 @@ struct TranslateViewModel {
     
     // viewModel -> view
     let sourceLabelText: Driver<String>
+    //let targetLabelText: Driver<String>
     let languageList: Signal<[LanguageType]>
     let changeLanguageButton: Signal<ButtonStyle>
     
@@ -46,15 +48,49 @@ struct TranslateViewModel {
             }
             .asSignal(onErrorJustReturn: ButtonStyle(type: .source, label: .Korean))
             
-        sourceLanguage
-            .subscribe({
-                print("source: \($0)")
+        // alamofire api 통신
+        Observable.combineLatest(
+            sourceLanguage,
+            targetLanguage,
+            sourceLabelText.asObservable(),
+            resultSelector: {source, target, text   -> [String] in
+                let source = source.code
+                let target = target.code
+                let paramerters = RequestMessage(source: source, target: target, text: text)
+                var headers: HTTPHeaders = [:]
+                for (key, value) in APIConstants.shared.values {
+                    headers.add(name: key, value: value)
+                }
+                AF.request("https://openapi.naver.com/v1/papago/n2mt",
+                           method: .post,
+                           parameters: paramerters,
+                           encoder: JSONParameterEncoder.default,
+                           headers: headers
+                )
+                //.validate(statusCode: 200..<300)
+                //.validate(contentType: ["application/json"])
+                .responseDecodable(of: ResponseMessage.self) { response in
+                    switch response.result {
+                    case let .success(responseMessage):
+                        let message = responseMessage.message.result
+                        print("\(message.text)")
+                    case let .failure(error):
+                        //TOBE: error alert
+                        print("\(error)")
+                    }
+                    
+                }
+                
+                return ["\(source), \(target), \(text)"]
             })
-
-        targetLanguage
-            .subscribe({
-                print("target: \($0)")
-            })
+        .subscribe(onNext: {
+            print($0[0])
+        })
+        .disposed(by: disposeBag)
+                
+                
+                
+            
         
     }
     
