@@ -67,8 +67,8 @@ struct TranslateViewModel {
                            encoder: JSONParameterEncoder.default,
                            headers: headers
                 )
-                //.validate(statusCode: 200..<300)
-                //.validate(contentType: ["application/json"])
+                .validate(statusCode: 200..<300)
+                .validate(contentType: ["application/json"])
                 .responseDecodable(of: ResponseMessage.self) { response in
                     switch response.result {
                     case let .success(responseMessage):

@@ -177,6 +177,47 @@ item의 content가 잘리는 현상
 - scroll view 안에 stack view를 집어넣는다.
 - stack view width = scroll view width 여야 vertical scroll 
 
+
+#### Property Wrapper
+
+```swift
+
+enum JSONDefaultWrapper {
+    typealias EmptyString = Wrapper<JSONDefaultWrapper.DefaultString>
+    
+    enum DefaultString: JSONDefaultWrapperAvailable {
+        static var defaultValue: String { "" }
+    }
+    
+    @propertyWrapper
+    struct Wrapper<T: JSONDefaultWrapperAvailable> {
+        typealias ValueType = T.ValueType
+        var wrappedValue: ValueType
+        init() {
+            wrappedValue = T.defaultValue
+        }
+    }
+}
+
+extension JSONDefaultWrapper.Wrapper: Decodable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        self.wrappedValue = try container.decode(ValueType.self)
+    }
+}
+
+extension KeyedDecodingContainer {
+    func decode<T: JSONDefaultWrapperAvailable>(_ type: JSONDefaultWrapper.Wrapper<T>.Type, forKey key: Key) throws -> JSONDefaultWrapper.Wrapper<T> {
+        try decodeIfPresent(type, forKey: key) ?? .init()
+    }
+}
+
+```
+- property wrapper 를 통해 get 을 통해 return 될 값을 custom한다.
+- Decodable과 엮을 경우, key에 따른 value 가 response에 존재하지 않을 때에 기본값을 제공하여 크래쉬를 피할 수 있다.
+- 타입에 관계없이 사용할 수 있도록 generic을 적용했다.
+
+
 ### A-ha 
 
 #### UIStackView
@@ -242,3 +283,30 @@ item의 content가 잘리는 현상
 
 - sourceLabelText는 text를 label에 뿌려주고, 이 값으로 network 통신을 해야하기 때문에, 새로운 구독자를 염두에 두고 driver를 사용하는 것이 적당할 것으로 보인다.
 - 이 외에는 Signal을 사용하였다.
+
+#### Alamofire
+
+```swift
+AF.request("https://openapi.naver.com/v1/papago/n2mt",
+           method: .post,
+           parameters: paramerters,
+           encoder: JSONParameterEncoder.default,
+           headers: headers
+)
+.validate(statusCode: 200..<300)
+.validate(contentType: ["application/json"])
+.responseDecodable(of: ResponseMessage.self) { response in
+    switch response.result {
+    case let .success(responseMessage):
+        let message = responseMessage.message.result
+        print("\(message.text)")
+    case let .failure(error):
+        //TOBE: error alert
+        print("\(error)")
+    }
+    
+}
+
+```
+- validate 메서드 사용하여 200 코드만 받을 수 있다.
+- responseDecodable 객체 통하여 내가 특정한 decodable 객체로 decode해서 response를 받을 수 있다 (간편!)

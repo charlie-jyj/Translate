@@ -9,7 +9,7 @@ import Foundation
 
 // Codable 통해 decode 할 때, 값이 존재하지 않을 경우 default 값을 주입한다.
 protocol JSONDefaultWrapperAvailable {
-    associatedtype ValueType: Decodable // 어떤 type일지 특정할 수 없기 때문에
+    associatedtype ValueType: Decodable // 어떤 type일지 특정할 수 없기 때문에 associatedtype
     static var defaultValue: ValueType { get }
 }
 
@@ -30,7 +30,7 @@ enum JSONDefaultWrapper {
     }
 }
 
-// decodable 한 type으로 만들어 준다.
+// Wrapper 자체를 decodable 한 type으로 만들어 준다.
 extension JSONDefaultWrapper.Wrapper: Decodable {
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
