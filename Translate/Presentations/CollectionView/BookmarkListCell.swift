@@ -53,17 +53,13 @@ class BookmarkListCell: UICollectionViewCell {
         return label
     }()
     
-//    func setContentOfCell(_ bookmark: Bookmark) {
-//        if let sourceLanguage = bookmark.sourceLanguage,
-//           let sourceText = bookmark.sourceText,
-//           let targetLanguage = bookmark.targetLanguage,
-//           let targetText = bookmark.targetText {
-//            sourceLanguageLabel.text = sourceLanguage
-//            sourceTextLabel.text = sourceText
-//            targetLanguageLabel.text = targetLanguage
-//            targetTextLabel.text = targetText
-//        }
-//    }
+    func setContentOfCell(_ bookmark: Bookmark) {
+        sourceLanguageLabel.text = bookmark.sourceLanguage.title
+        sourceTextLabel.text = bookmark.sourceContent
+        targetLanguageLabel.text = bookmark.targetLanguage.title
+        targetTextLabel.text = bookmark.targetContent
+        
+    }
     
     func setSampleCell(sourceLanguage: String, sourceText:String, targetLanguage:String, targetText: String) {
         sourceLanguageLabel.text = sourceLanguage

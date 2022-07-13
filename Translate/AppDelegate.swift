@@ -12,6 +12,17 @@ import Firebase
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
+    lazy var persistentContainer: NSPersistentContainer = {
+        let container = NSPersistentContainer(name: "BookmarkItems")
+        container.loadPersistentStores { description, error in
+            if let error = error {
+                fatalError("Unable to load persistent stores: \(error)")
+            }
+        }
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        return container
+    }()
+    
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         UNUserNotificationCenter.current().delegate = self
         return true

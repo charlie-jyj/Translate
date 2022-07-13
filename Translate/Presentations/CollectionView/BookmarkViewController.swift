@@ -14,58 +14,8 @@ import CoreData
 class BookmarkViewController: UICollectionViewController {
     
     var viewModel: BookmarkViewModel!
-    var sampleData: [[[String:String]]] = [
-        [
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take? and I need more long setence to know if the cell scroll is working or not: I think there is the right property to controll the scroll vertically or horizontally then I should looking out all over the place"
-            ],
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take?"
-            ],
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take?"
-            ],
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take?"
-            ],
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take?"
-            ],
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take?"
-            ],
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take?"
-            ],
-            [
-            "sourceLanguage":"Korean",
-            "sourceText": "이 호텔은 어디에 있나요? 어떤 교통수단을 탈 수 있을까요?",
-            "targetLanguage": "English",
-            "targetText": "Where is this hotel? what kind of transportation I can take?"
-            ]
-        ]
-    ]
+    let disposeBag = DisposeBag()
+    var sampleData: [Bookmark] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,6 +24,10 @@ class BookmarkViewController: UICollectionViewController {
     
     func bind(_ model: BookmarkViewModel) {
         viewModel = model
+        // tabviewcontroller viewDidLoad 후, coredata의 item을 fetch하여 collection view에 뿌리기
+        Observable.just("viewDidLoad")
+            .bind(to: viewModel.viewdidload)
+            .disposed(by: disposeBag)
     }
     
     private func attribute() {
@@ -149,13 +103,8 @@ extension BookmarkViewController {
     // cell 내용 결정
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BookmarkListCell", for: indexPath) as? BookmarkListCell else { return UICollectionViewCell() }
-        let content = sampleData[0][indexPath.row]
-        cell.setSampleCell(
-            sourceLanguage: content["sourceLanguage"]!,
-            sourceText: content["sourceText"]!,
-            targetLanguage: content["targetLanguage"]!,
-            targetText: content["targetText"]!
-        )
+        let bookmark = sampleData[indexPath.row]
+        cell.setContentOfCell(bookmark)
         return cell
     }
     

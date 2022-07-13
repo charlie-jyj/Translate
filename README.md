@@ -3,12 +3,20 @@
 
 ## 번역 기능을 가진 App 만들기
 
-### 구현 목표
+###1-1 major 구현 목표
 
-1. 입력한 텍스트를 번역한다. (진행중)
-2. 음성을 실시간으로 텍스트화 하고 그 텍스트를 번역한다.
-3. 음성을 텍스트로 번역하고 번역된 결과를 핸드폰이 읽어준다. 
+1. 입력한 텍스트를 번역한다. (ok)
+2. 음성을 텍스트화 하고 `Dictation` 그 텍스트를 번역한다.
+3. 번역하고 번역된 결과를 핸드폰이 읽어준다. 
 
+###1-2 minor 구현 목표
+1. 네트워크 연결 확인하고 alert
+1. Siri kit을 사용하여 명령어로 동작한다. `App Intents API` (적용 시 setup 필요하지 않을 것)
+3. widget을 사용하여 최신 번역 텍스트를 확인한다.
+
+
+### index
+- 0711 coredata fetch 구현중
 
 #### iOS
 
@@ -284,7 +292,7 @@ extension KeyedDecodingContainer {
 - sourceLabelText는 text를 label에 뿌려주고, 이 값으로 network 통신을 해야하기 때문에, 새로운 구독자를 염두에 두고 driver를 사용하는 것이 적당할 것으로 보인다.
 - 이 외에는 Signal을 사용하였다.
 
-#### Alamofire
+#### 😍Alamofire😍 (효자)
 
 ```swift
 AF.request("https://openapi.naver.com/v1/papago/n2mt",
@@ -310,3 +318,4 @@ AF.request("https://openapi.naver.com/v1/papago/n2mt",
 ```
 - validate 메서드 사용하여 200 코드만 받을 수 있다.
 - responseDecodable 객체 통하여 내가 특정한 decodable 객체로 decode해서 response를 받을 수 있다 (간편!)
+- encoder: JSONParameterEncoder.default를 통하여 encodable 객체를 바로 parameters로 넘길 수 있다.

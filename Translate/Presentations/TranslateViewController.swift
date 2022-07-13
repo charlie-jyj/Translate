@@ -15,7 +15,7 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
    
     var viewModel: TranslateViewModel!
     let disposeBag = DisposeBag()
-    let sourcePlaceholderText = "텍스트 입력"
+    let sourcePlaceholderText = "번역할 텍스트 입력..."
     
     private lazy var sourceButton: UIButton = {
         let button = UIButton()
@@ -37,11 +37,24 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         return button
     }()
     
+    private lazy var shiftarrow: UIView = {
+        let view = UIView()
+        let image = UIImageView(image: UIImage(systemName: "arrow.right.circle"))
+        view.addSubview(image)
+        image.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(24)
+            $0.width.equalTo(24)
+        }
+        return view
+    }()
+    
     private lazy var buttonStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.distribution = .fillEqually
         stackView.spacing = 10
-        [sourceButton, targetButton].forEach {
+        [sourceButton, shiftarrow, targetButton].forEach {
             stackView.addArrangedSubview($0)
         }
         return stackView
@@ -81,6 +94,8 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         let button = UIButton()
         button.setImage(UIImage(systemName: "bookmark"), for: .normal)
         button.setImage(UIImage(systemName: "bookmark.fill"), for: .selected)
+        button.toolTip = "bookmark"
+        button.addTarget(self, action: #selector(didTapBookmarkButton), for: .touchUpInside)
         return button
     }()
     
@@ -88,9 +103,19 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         let button = UIButton()
         button.setImage(UIImage(systemName: "doc.on.doc"), for: .normal)
         button.setImage(UIImage(systemName: "doc.on.doc.fill"), for: .selected)
+        button.toolTip = "copy on clipboard"
         return button
     }()
-
+    
+    private lazy var voiceButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "speaker.wave.2"), for: .normal)
+        button.setImage(UIImage(systemName: "speaker.wave.2.fill"), for: .selected)
+        button.toolTip = "text to speak"
+        button.toolTipInteraction?.delegate = self
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         definesPresentationContext = true
@@ -101,7 +126,11 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
     func bind(_ model: TranslateViewModel){
         viewModel = model
         viewModel.sourceLabelText
-            .drive(self.rx.presentText)
+            .drive(self.rx.presentSource)
+            .disposed(by: disposeBag)
+        
+        viewModel.targetLabelText
+            .drive(self.rx.presentResult)
             .disposed(by: disposeBag)
          
         viewModel.languageList
@@ -115,14 +144,6 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
     
     private func attribute(){
         view.backgroundColor = .secondarySystemBackground
-        
-        let topAttributes : [NSAttributedString.Key : Any] = [
-            .font : UIFont.systemFont(ofSize: 23, weight: .bold),
-            .foregroundColor: UIColor.mainTintColor
-        ]
-        let resultText = "I would like my steak medium rare and add some coke please"
-        resultTextLabel.attributedText = NSAttributedString(string: resultText, attributes: topAttributes)
-        
         sourceButton.setTitle(viewModel.sourceLanguage.value.title, for: .normal)
         targetButton.setTitle(viewModel.targetLanguage.value.title, for: .normal)
     }
@@ -140,6 +161,7 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
             resultTextLabel,
             bookmarkButton,
             copyButton,
+            voiceButton,
             sourceBaseView,
             sourceTextLabel
         ].forEach {
@@ -180,6 +202,13 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
             $0.height.equalTo(40)
         }
         
+        voiceButton.snp.makeConstraints {
+            $0.leading.equalTo(copyButton.snp.trailing).offset(8)
+            $0.top.equalTo(copyButton.snp.top)
+            $0.width.equalTo(40)
+            $0.height.equalTo(40)
+        }
+        
         sourceBaseView.snp.makeConstraints {
             $0.top.equalTo(resultBaseView.snp.bottom).offset(defaultSpacing)
             $0.leading.equalToSuperview()
@@ -205,6 +234,17 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         }
     }
     
+    func presentResultText(result: String) {
+        if result != "" {
+            let topAttributes : [NSAttributedString.Key : Any] = [
+                .font : UIFont.systemFont(ofSize: 23, weight: .bold),
+                .foregroundColor: UIColor.mainTintColor
+            ]
+            let resultText = result
+            resultTextLabel.attributedText = NSAttributedString(string: resultText, attributes: topAttributes)
+        }
+    }
+    
     func setSourceButtonText(from language: LanguageType) {
         sourceButton.setTitle(language.title, for: .normal)
         Observable.just(language)
@@ -220,7 +260,7 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
     }
 }
 
-extension TranslateViewController {
+extension TranslateViewController: UIToolTipInteractionDelegate {
     
     // 이벤트 리스너 함수
     @objc func didTapSourceBaseView() {
@@ -241,14 +281,37 @@ extension TranslateViewController {
             .disposed(by: disposeBag)
     }
     
-    
+    @objc func didTapBookmarkButton() {
+        // validation (번역 결과물이 존재할 때 bookmark에 저장한다.)
+        if let _sourceText = sourceTextLabel.text,
+           _sourceText != sourcePlaceholderText,
+           let _targetText = resultTextLabel.text,
+           _targetText != "" {
+            let bookmark = Bookmark(_sourceLanguage: viewModel.sourceLanguage.value,
+                                    _targetLanguage: viewModel.targetLanguage.value,
+                                    _sourceContent: _sourceText,
+                                    _targetContent: _targetText)
+            Observable.just(bookmark)
+                .bind(to: viewModel.tapBookmarkButton)
+                .disposed(by: disposeBag)
+        }
+       
+    }
+
 }
+
 
 // rx 확장
 extension Reactive where Base: TranslateViewController {
-    var presentText: Binder<String> {
+    var presentSource: Binder<String> {
         return Binder(base) { base, text in
             base.presentSourceText(source: text)
+        }
+    }
+    
+    var presentResult: Binder<String> {
+        return Binder(base) { base, text in
+            base.presentResultText(result: text)
         }
     }
     

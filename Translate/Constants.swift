@@ -11,6 +11,7 @@ struct APIConstants {
     static let shared = APIConstants()
     let clientIDKey = "X-Naver-Client-Id"
     let clientSKey = "X-Naver-Client-Secret"
+    let requestURL = "https://openapi.naver.com/v1/papago/n2mt"
     let values: [String: String]
     
     init() {
