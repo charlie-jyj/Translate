@@ -15,21 +15,37 @@ struct BookmarkViewModel {
     
     // viewModel -> view
     let bookmarkItems: Driver<[Item]>
+    let isUpdated: Signal<Int>
     
     // view -> viewModel
     let viewdidload = PublishRelay<String>()
     
     // viewModel -> viewModel
     let fetchData = BehaviorSubject<[Item]>(value: [])
+    let fetchDataCount = BehaviorSubject<Int>(value: 0)
+    let isFetched = PublishSubject<String>()
     
     
     init() {
-        bookmarkItems = fetchData
+        fetchData
+            .subscribe(onNext: { (items) in
+                print("fetchdata subscribe", items.count)
+            })
+            .disposed(by: disposeBag)
+        
+        
+        bookmarkItems = isFetched
+            .withLatestFrom(fetchData)
+            .distinctUntilChanged()
+            .map { $0 }
             .asDriver(onErrorJustReturn: [])
         
-        viewdidload
-            .subscribe(onNext: { (signal) in
-                
-            })
+        
+        isUpdated = isFetched
+            .withLatestFrom(fetchDataCount)
+            .distinctUntilChanged()
+            .map { $0 }
+            .asSignal(onErrorJustReturn: 0)
+    
     }
 }

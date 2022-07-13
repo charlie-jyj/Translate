@@ -287,8 +287,8 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
            _sourceText != sourcePlaceholderText,
            let _targetText = resultTextLabel.text,
            _targetText != "" {
-            let bookmark = Bookmark(_sourceLanguage: viewModel.sourceLanguage.value,
-                                    _targetLanguage: viewModel.targetLanguage.value,
+            let bookmark = Bookmark(_sourceLanguage: viewModel.sourceLanguage.value.title,
+                                    _targetLanguage: viewModel.targetLanguage.value.title,
                                     _sourceContent: _sourceText,
                                     _targetContent: _targetText)
             Observable.just(bookmark)

@@ -17,6 +17,7 @@
 
 ### index
 - 0711 coredata fetch 구현중
+- 0713 coredata 사용한 bookmark 구현 끝
 
 #### iOS
 
@@ -185,6 +186,19 @@ item의 content가 잘리는 현상
 - scroll view 안에 stack view를 집어넣는다.
 - stack view width = scroll view width 여야 vertical scroll 
 
+###### error 5
+
+```
+allowed unarchiving safe plist type ''NSString'
+```
+```swift
+    override class var allowedTopLevelClasses: [AnyClass] {
+        return [Bookmark.self, NSString.self]
+    }
+```
+- coreData에서 Transformable type을 사용할 경우에 볼 수 있는 에러
+- custom 클래스에서 사용되는 NSType을 모두 기록하면 해결된다.
+
 
 #### Property Wrapper
 
@@ -319,3 +333,5 @@ AF.request("https://openapi.naver.com/v1/papago/n2mt",
 - validate 메서드 사용하여 200 코드만 받을 수 있다.
 - responseDecodable 객체 통하여 내가 특정한 decodable 객체로 decode해서 response를 받을 수 있다 (간편!)
 - encoder: JSONParameterEncoder.default를 통하여 encodable 객체를 바로 parameters로 넘길 수 있다.
+
+

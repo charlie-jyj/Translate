@@ -54,19 +54,19 @@ class BookmarkListCell: UICollectionViewCell {
     }()
     
     func setContentOfCell(_ bookmark: Bookmark) {
-        sourceLanguageLabel.text = bookmark.sourceLanguage.title
+        sourceLanguageLabel.text = bookmark.sourceLanguage
         sourceTextLabel.text = bookmark.sourceContent
-        targetLanguageLabel.text = bookmark.targetLanguage.title
+        targetLanguageLabel.text = bookmark.targetLanguage
         targetTextLabel.text = bookmark.targetContent
         
     }
     
-    func setSampleCell(sourceLanguage: String, sourceText:String, targetLanguage:String, targetText: String) {
-        sourceLanguageLabel.text = sourceLanguage
-        sourceTextLabel.text = sourceText
-        targetLanguageLabel.text = targetLanguage
-        targetTextLabel.text = targetText
-    }
+//    func setSampleCell(sourceLanguage: String, sourceText:String, targetLanguage:String, targetText: String) {
+//        sourceLanguageLabel.text = sourceLanguage
+//        sourceTextLabel.text = sourceText
+//        targetLanguageLabel.text = targetLanguage
+//        targetTextLabel.text = targetText
+//    }
     
     override func layoutSubviews() {
         super.layoutSubviews()

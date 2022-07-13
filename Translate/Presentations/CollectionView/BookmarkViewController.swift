@@ -15,19 +15,34 @@ class BookmarkViewController: UICollectionViewController {
     
     var viewModel: BookmarkViewModel!
     let disposeBag = DisposeBag()
-    var sampleData: [Bookmark] = []
+    var bookmarkData: [Item] = []
+    var dataCount: Int = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
         attribute()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        print("bookmarkviewwillappear", bookmarkData.count, dataCount)
+    }
+    
     func bind(_ model: BookmarkViewModel) {
         viewModel = model
-        // tabviewcontroller viewDidLoad 후, coredata의 item을 fetch하여 collection view에 뿌리기
-        Observable.just("viewDidLoad")
-            .bind(to: viewModel.viewdidload)
+        
+        // fetch 후 colletion view에 반영
+        viewModel
+            .bookmarkItems
+            .drive(self.rx.bookmarkDataSource)
             .disposed(by: disposeBag)
+        
+        // data 변경 시 reloadData
+        viewModel
+            .isUpdated
+            .emit(to: self.rx.isBookmarkUpdated)
+            .disposed(by: disposeBag)
+            
     }
     
     private func attribute() {
@@ -67,7 +82,7 @@ class BookmarkViewController: UICollectionViewController {
         
         // 2. group
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalHeight(0.75))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 2)
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 3)
         //let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
         
         // 3. section
@@ -81,9 +96,34 @@ class BookmarkViewController: UICollectionViewController {
         
         return section
     }
+    
+    func setBookmarkData(items: [Item]) {
+        print("set bookmark data", items)
+        bookmarkData = items
+        collectionView.reloadData()
+    }
+    
+    func reloadCollectionView(cnt: Int) {
+        dataCount = cnt
+        collectionView.reloadData()
+    }
 }
 
-//TOBE: Rx로 변환하기
+extension Reactive where Base: BookmarkViewController {
+    var bookmarkDataSource: Binder<[Item]> {
+        return Binder(base) { base, items in
+            base.setBookmarkData(items: items)
+        }
+    }
+    
+    var isBookmarkUpdated: Binder<Int> {
+        return Binder(base) { base, cnt in
+            base.reloadCollectionView(cnt: cnt)
+        }
+    }
+}
+
+
 extension BookmarkViewController {
 
     /*
@@ -97,14 +137,14 @@ extension BookmarkViewController {
     
     // section 별 item 수
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6
+        return dataCount
     }
     
     // cell 내용 결정
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BookmarkListCell", for: indexPath) as? BookmarkListCell else { return UICollectionViewCell() }
-        let bookmark = sampleData[indexPath.row]
-        cell.setContentOfCell(bookmark)
+        let item = bookmarkData[indexPath.last!]
+        cell.setContentOfCell(item.bookmark)
         return cell
     }
     

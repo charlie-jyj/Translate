@@ -7,10 +7,12 @@
 
 import UIKit
 import CoreData
+import RxSwift
 
 class TabBarController: UITabBarController {
     
     let viewModel = CoreDataViewModel()
+    let disposeBag = DisposeBag()
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -25,6 +27,10 @@ class TabBarController: UITabBarController {
         let bookmarkViewController = BookmarkViewController(collectionViewLayout: UICollectionViewFlowLayout())
         translateViewController.bind(viewModel.translateViewModel)
         bookmarkViewController.bind(viewModel.bookmarkViewModel)
+        
+        Observable.just("viewDidLoad")
+            .bind(to: viewModel.bookmarkViewModel.viewdidload)
+            .disposed(by: disposeBag)
        
         translateViewController.tabBarItem = UITabBarItem(
             title: "번역",

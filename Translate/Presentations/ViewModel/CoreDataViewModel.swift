@@ -29,20 +29,54 @@ class CoreDataViewModel {
             .tapBookmarkButton
             .subscribe(onNext: { [weak self] (bookmark) in
                 print(bookmark.sourceContent,"=>",bookmark.targetContent)
-                if let _context = self?.context {
+                if let _context = self?.context,
+                   let createDate = self?.currentDateTime() {
                     let entity = NSEntityDescription.entity(forEntityName: "Item", in: _context)
                     let newBookmark = NSManagedObject(entity: entity!, insertInto: _context)
                     newBookmark.setValue(bookmark, forKey: "bookmark")
-                    newBookmark.setValue(self?.currentDate(), forKey: "createDate")
+                    newBookmark.setValue(createDate, forKey: "createDate")
                     self?.saveContext()
                 }
                 
            
             })
             .disposed(by: disposeBag)
+        
+        // bookmark viewDidLoad 시점에 fetch
+        bookmarkViewModel
+            .viewdidload
+            .subscribe(onNext: { (signal) in
+                if signal == "viewDidLoad" {
+                    let completion = {[weak self] (result: FetchItemsResult) -> Void in
+                        switch result {
+                        case .success(let items):
+                            print("viewdidload fetch: \(items)")
+                            if let _bookmarkViewModel = self?.bookmarkViewModel,
+                               let _disposeBag = self?.disposeBag {
+                                Observable.just(items)
+                                    .bind(to: _bookmarkViewModel.fetchData)
+                                    .disposed(by: _disposeBag)
+                                
+                                Observable.just(items.count)
+                                    .bind(to: _bookmarkViewModel.fetchDataCount)
+                                    .disposed(by: _disposeBag)
+                                
+                                Observable.just("fetched")
+                                    .bind(to: _bookmarkViewModel.isFetched)
+                                    .disposed(by: _disposeBag)
+                            }
+                        case .failure(let error):
+                            print("fetch error: \(error.localizedDescription)")
+                        }
+                    }
+                    
+                    self.fetchPersistedData(completion: completion)
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
-    func currentDate() -> String {
+    func currentDateTime() -> String {
         let date = Date()
         let dateformatter = DateFormatter()
         dateformatter.dateFormat = "yyyyMMddHH:mm"
@@ -65,14 +99,19 @@ class CoreDataViewModel {
                 fatalError("Unresolved error \(error.localizedDescription) \(error.userInfo)")
             }
             
+            // bookmark 저장 후 fetch
             let completion = {[weak self] (result: FetchItemsResult) -> Void in
                 switch result {
                 case .success(let items):
-                    print("fetch success: \(items)")
+                    print("after save: \(items)")
                     if let _bookmarkViewModel = self?.bookmarkViewModel,
                        let _disposeBag = self?.disposeBag {
                         Observable.just(items)
                             .bind(to: _bookmarkViewModel.fetchData)
+                            .disposed(by: _disposeBag)
+                        
+                        Observable.just(items.count)
+                            .bind(to: _bookmarkViewModel.fetchDataCount)
                             .disposed(by: _disposeBag)
                     }
                 case .failure(let error):

@@ -7,10 +7,11 @@
 
 import Foundation
 
-public class Bookmark: NSObject, NSCoding {
+public class Bookmark: NSObject, NSCoding, NSSecureCoding {
+    public static var supportsSecureCoding: Bool = true
     
-    var sourceLanguage: LanguageType
-    var targetLanguage: LanguageType
+    var sourceLanguage: String
+    var targetLanguage: String
     var sourceContent: String
     var targetContent: String
     
@@ -21,7 +22,7 @@ public class Bookmark: NSObject, NSCoding {
         case targetContent = "targetContent"
     }
     
-    init(_sourceLanguage: LanguageType, _targetLanguage: LanguageType, _sourceContent: String, _targetContent: String) {
+    init(_sourceLanguage: String, _targetLanguage: String, _sourceContent: String, _targetContent: String) {
         self.sourceLanguage = _sourceLanguage
         self.targetLanguage = _targetLanguage
         self.sourceContent = _sourceContent
@@ -36,12 +37,11 @@ public class Bookmark: NSObject, NSCoding {
     }
     
     required public init?(coder: NSCoder) {
-        sourceLanguage = coder.decodeObject(forKey: "sourceLanguage") as! LanguageType
-        targetLanguage = coder.decodeObject(forKey: "targetLanguage") as! LanguageType
+        sourceLanguage = coder.decodeObject(forKey: "sourceLanguage") as! String
+        targetLanguage = coder.decodeObject(forKey: "targetLanguage") as! String
         sourceContent = coder.decodeObject(forKey: "sourceContent") as! String
         targetContent = coder.decodeObject(forKey: "targetContent") as! String
         
     }
-    
-    
 }
+

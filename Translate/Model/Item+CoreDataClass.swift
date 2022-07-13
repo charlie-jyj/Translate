@@ -15,7 +15,7 @@ public class Item: NSManagedObject {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         createDate = DateFormatter().string(from: Date())
-        bookmark = Bookmark(_sourceLanguage: .Korean, _targetLanguage: .English, _sourceContent: "", _targetContent: "")
+        bookmark = Bookmark(_sourceLanguage: LanguageType.Korean.title, _targetLanguage: LanguageType.English.title, _sourceContent: "", _targetContent: "")
     }
     
     func validateItem(_ item:Bookmark) {

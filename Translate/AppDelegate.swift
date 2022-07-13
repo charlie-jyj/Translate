@@ -13,6 +13,7 @@ import Firebase
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     lazy var persistentContainer: NSPersistentContainer = {
+        ValueTransformer.setValueTransformer(BookmarkToDataTransformer(), forName: .bookmarkToDataTransformer)
         let container = NSPersistentContainer(name: "BookmarkItems")
         container.loadPersistentStores { description, error in
             if let error = error {
