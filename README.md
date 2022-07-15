@@ -5,19 +5,21 @@
 
 ###1-1 major 구현 목표
 
-1. 입력한 텍스트를 번역한다. (ok)
+1. 입력한 텍스트를 번역한다. (done)
 2. 음성을 텍스트화 하고 `Dictation` 그 텍스트를 번역한다.
 3. 번역하고 번역된 결과를 핸드폰이 읽어준다. 
 
 ###1-2 minor 구현 목표
-1. 네트워크 연결 확인하고 alert
-1. Siri kit을 사용하여 명령어로 동작한다. `App Intents API` (적용 시 setup 필요하지 않을 것)
-3. widget을 사용하여 최신 번역 텍스트를 확인한다.
+1. data 삭제 구현
+2. 네트워크 연결 확인하고 alert
+3. Siri kit을 사용하여 명령어로 동작한다. `App Intents API` (적용 시 setup 필요하지 않을 것)
+4. widget을 사용하여 최신 번역 텍스트를 확인한다.
 
 
 ### index
 - 0711 coredata fetch 구현중
 - 0713 coredata 사용한 bookmark 구현 끝
+- 0714 save후 fetch data 가 뷰에 반영되지 않는 오류  <해결>
 
 #### iOS
 
@@ -198,6 +200,16 @@ allowed unarchiving safe plist type ''NSString'
 ```
 - coreData에서 Transformable type을 사용할 경우에 볼 수 있는 에러
 - custom 클래스에서 사용되는 NSType을 모두 기록하면 해결된다.
+
+###### error 6
+```
+coreData 저장 후에 subject에 값을 drive에 반영시키는 과정에서 
+BehaviorSubject, PublishSubject가 update되지 않아 collection view에서도 변화가 없는 오류
+```
+- subject에 값을 전달할 때에 on(.next())를 사용하여 해결 
+- 구독은 init에서 이미 이루어졌는데 구독자에게 data를 전달하는 과정에서 실수했다.
+- Observable.just는 Observable을 임의로 새롭게 생성해야 할 때에 사용한다. (view->viewModel)
+- (viewModel<->viewModel) 을 담당하는 subject에게는 just로 전달하는 것은 적절하지 않다.
 
 
 #### Property Wrapper

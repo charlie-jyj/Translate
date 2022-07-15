@@ -10,6 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import CoreData
+import AVFoundation
 
 class TranslateViewController: UIViewController, SourceTextViewDelegate {
    
@@ -104,6 +105,7 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         button.setImage(UIImage(systemName: "doc.on.doc"), for: .normal)
         button.setImage(UIImage(systemName: "doc.on.doc.fill"), for: .selected)
         button.toolTip = "copy on clipboard"
+        button.addTarget(self, action: #selector(didTapCopyButton), for: .touchUpInside)
         return button
     }()
     
@@ -111,7 +113,8 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         let button = UIButton()
         button.setImage(UIImage(systemName: "speaker.wave.2"), for: .normal)
         button.setImage(UIImage(systemName: "speaker.wave.2.fill"), for: .selected)
-        button.toolTip = "text to speak"
+        button.toolTip = "text to speech"
+        button.addTarget(self, action: #selector(didTapSpeechButton), for: .touchUpInside)
         button.toolTipInteraction?.delegate = self
         return button
     }()
@@ -296,6 +299,53 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
                 .disposed(by: disposeBag)
         }
        
+    }
+    
+    @objc func didTapCopyButton() {
+        // copy해서 clipboard에 paste 가능하게
+        if let translatedText = resultTextLabel.text {
+            UIPasteboard.general.string = translatedText
+            let firstActivityItem = "번역 결과를 친구에게 공유해보자."
+            let secondActivityItem = translatedText
+            
+            let activityViewController: UIActivityViewController = UIActivityViewController(
+                activityItems: [
+                    firstActivityItem,
+                    secondActivityItem
+                ],
+                applicationActivities: nil)
+            
+            activityViewController.activityItemsConfiguration = [
+                UIActivity.ActivityType.message
+            ] as? UIActivityItemsConfigurationReading
+            
+            activityViewController.excludedActivityTypes = [
+                .copyToPasteboard,
+                .message,
+                .airDrop,
+            ]
+            
+            activityViewController.isModalInPresentation = true
+            self.present(activityViewController, animated: true)
+        }
+    }
+    
+    @objc func didTapSpeechButton() {
+        // text to speech
+        if let translatedText = resultTextLabel.text {
+            let utterance = AVSpeechUtterance(string: translatedText)
+            var language: String
+            switch viewModel.targetLanguage.value {
+            case .English: language = "en-US"
+            case .Japanese: language = "ja-JP"
+            case .Korean: language = "ko-KR"
+            case .Spanish: language = "es-ES"
+            }
+            utterance.voice = AVSpeechSynthesisVoice(language: language)
+            utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+            let synthesizer = AVSpeechSynthesizer()
+            synthesizer.speak(utterance)
+        }
     }
 
 }

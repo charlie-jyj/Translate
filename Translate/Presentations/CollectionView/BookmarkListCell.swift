@@ -61,13 +61,6 @@ class BookmarkListCell: UICollectionViewCell {
         
     }
     
-//    func setSampleCell(sourceLanguage: String, sourceText:String, targetLanguage:String, targetText: String) {
-//        sourceLanguageLabel.text = sourceLanguage
-//        sourceTextLabel.text = sourceText
-//        targetLanguageLabel.text = targetLanguage
-//        targetTextLabel.text = targetText
-//    }
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         contentView.backgroundColor = .white

@@ -43,7 +43,6 @@
 		6AE78FC72828D3C800A05115 /* BookmarkListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FC62828D3C800A05115 /* BookmarkListCell.swift */; };
 		6AE9324D2825041B00FBF607 /* LanguageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE9324C2825041B00FBF607 /* LanguageType.swift */; };
 		6AE932522828AC3300FBF607 /* CoreDataViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE932512828AC3300FBF607 /* CoreDataViewModel.swift */; };
-		6AE932542828AD0200FBF607 /* BookmarkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE932532828AD0200FBF607 /* BookmarkViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,7 +103,6 @@
 		6AE78FC62828D3C800A05115 /* BookmarkListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkListCell.swift; sourceTree = "<group>"; };
 		6AE9324C2825041B00FBF607 /* LanguageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageType.swift; sourceTree = "<group>"; };
 		6AE932512828AC3300FBF607 /* CoreDataViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataViewModel.swift; sourceTree = "<group>"; };
-		6AE932532828AD0200FBF607 /* BookmarkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,7 +212,6 @@
 				6A1769FC281A5912004AF6C8 /* TranslateViewModel.swift */,
 				6A1769FF281A5D73004AF6C8 /* SourceTextViewModel.swift */,
 				6AE932512828AC3300FBF607 /* CoreDataViewModel.swift */,
-				6AE932532828AD0200FBF607 /* BookmarkViewModel.swift */,
 				6A57991B284F1F3300E18E29 /* APIViewModel.swift */,
 			);
 			path = ViewModel;
@@ -328,6 +325,7 @@
 				6A1769E928192320004AF6C8 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				6A1769F5281A58C0004AF6C8 /* XCRemoteSwiftPackageReference "RxSwift" */,
 				6A0F857B284063F50014D037 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				6A90B24B287FCDF800254191 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */,
 			);
 			productRefGroup = 6A1769CF2819224C004AF6C8 /* Products */;
 			projectDirPath = "";
@@ -391,7 +389,6 @@
 				6A90B24A287E8FE800254191 /* BookmarkToDataTransformer.swift in Sources */,
 				6A1769FD281A5912004AF6C8 /* TranslateViewModel.swift in Sources */,
 				6AE78FC52828D3BB00A05115 /* BookmarkListHeader.swift in Sources */,
-				6AE932542828AD0200FBF607 /* BookmarkViewModel.swift in Sources */,
 				6A0F85A72844911D0014D037 /* Message.swift in Sources */,
 				6A1769F4281A2EA5004AF6C8 /* SourceTextViewController.swift in Sources */,
 				6A57991C284F1F3300E18E29 /* APIViewModel.swift in Sources */,
@@ -720,6 +717,14 @@
 			requirement = {
 				branch = main;
 				kind = branch;
+			};
+		};
+		6A90B24B287FCDF800254191 /* XCRemoteSwiftPackageReference "kakao-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kakao/kakao-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

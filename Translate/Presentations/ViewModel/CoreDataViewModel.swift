@@ -20,11 +20,40 @@ class CoreDataViewModel {
     
     let disposeBag = DisposeBag()
     let translateViewModel = TranslateViewModel()
-    let bookmarkViewModel = BookmarkViewModel()
     var context: NSManagedObjectContext!
     
+    // viewModel -> view
+    var bookmarkItems: Driver<[Item]>
+    var bookmarkCount: Driver<Int>
+
+    
+    // view -> viewModel
+    let viewdidload = PublishRelay<String>()
+    
+    // viewModel -> viewModel
+    let fetchData = BehaviorSubject<[Item]>(value: [])
+    let fetchDataCount = BehaviorSubject<Int>(value: 0)
+    let isFetched = PublishSubject<String>()
+    
     init() {
+        
+        isFetched
+            .subscribe(onNext: { (message) in
+                print(message)
+            })
+            .disposed(by: disposeBag)
+        
+        bookmarkItems = isFetched
+            .withLatestFrom(fetchData)
+            .map { $0 }
+            .asDriver(onErrorJustReturn: [])
+        
+        bookmarkCount = isFetched
+            .withLatestFrom(fetchDataCount)
+            .asDriver(onErrorJustReturn: 0)
+        
         openDatabase()
+        
         translateViewModel
             .tapBookmarkButton
             .subscribe(onNext: { [weak self] (bookmark) in
@@ -42,28 +71,26 @@ class CoreDataViewModel {
             })
             .disposed(by: disposeBag)
         
-        // bookmark viewDidLoad 시점에 fetch
-        bookmarkViewModel
-            .viewdidload
+        //viewDidLoad 시점에 fetch
+        viewdidload
             .subscribe(onNext: { (signal) in
                 if signal == "viewDidLoad" {
                     let completion = {[weak self] (result: FetchItemsResult) -> Void in
                         switch result {
                         case .success(let items):
                             print("viewdidload fetch: \(items)")
-                            if let _bookmarkViewModel = self?.bookmarkViewModel,
-                               let _disposeBag = self?.disposeBag {
-                                Observable.just(items)
-                                    .bind(to: _bookmarkViewModel.fetchData)
-                                    .disposed(by: _disposeBag)
+                            if  let _fetchData = self?.fetchData,
+                                let _fetchDataCount = self?.fetchDataCount,
+                                let _isFetched = self?.isFetched {
+                        
+                                _fetchData
+                                    .on(.next(items))
                                 
-                                Observable.just(items.count)
-                                    .bind(to: _bookmarkViewModel.fetchDataCount)
-                                    .disposed(by: _disposeBag)
+                                _fetchDataCount
+                                    .on(.next(items.count))
                                 
-                                Observable.just("fetched")
-                                    .bind(to: _bookmarkViewModel.isFetched)
-                                    .disposed(by: _disposeBag)
+                                _isFetched
+                                    .on(.next("fetched"))
                             }
                         case .failure(let error):
                             print("fetch error: \(error.localizedDescription)")
@@ -74,6 +101,7 @@ class CoreDataViewModel {
                 }
             })
             .disposed(by: disposeBag)
+        
     }
     
     func currentDateTime() -> String {
@@ -99,27 +127,28 @@ class CoreDataViewModel {
                 fatalError("Unresolved error \(error.localizedDescription) \(error.userInfo)")
             }
             
-            // bookmark 저장 후 fetch
-            let completion = {[weak self] (result: FetchItemsResult) -> Void in
+            let saveCompletion = {[weak self] (result: FetchItemsResult) -> Void in
+                guard let self = self else { return }
                 switch result {
                 case .success(let items):
                     print("after save: \(items)")
-                    if let _bookmarkViewModel = self?.bookmarkViewModel,
-                       let _disposeBag = self?.disposeBag {
-                        Observable.just(items)
-                            .bind(to: _bookmarkViewModel.fetchData)
-                            .disposed(by: _disposeBag)
-                        
-                        Observable.just(items.count)
-                            .bind(to: _bookmarkViewModel.fetchDataCount)
-                            .disposed(by: _disposeBag)
-                    }
+                    
+                    self.fetchData
+                        .on(.next(items))
+                    
+                    self.fetchDataCount
+                        .on(.next(items.count))
+                    
+                    self.isFetched
+                        .on(.next("fetched after saving"))
+                
                 case .failure(let error):
                     print("fetch error: \(error.localizedDescription)")
                 }
             }
             
-            fetchPersistedData(completion: completion)
+            // bookmark 저장 후 fetch
+            fetchPersistedData(completion: saveCompletion)
         }
     }
     

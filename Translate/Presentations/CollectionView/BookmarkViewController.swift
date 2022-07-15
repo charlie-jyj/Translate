@@ -13,7 +13,7 @@ import CoreData
 
 class BookmarkViewController: UICollectionViewController {
     
-    var viewModel: BookmarkViewModel!
+    var viewModel: CoreDataViewModel!
     let disposeBag = DisposeBag()
     var bookmarkData: [Item] = []
     var dataCount: Int = 0
@@ -25,22 +25,22 @@ class BookmarkViewController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        collectionView.reloadData()
         print("bookmarkviewwillappear", bookmarkData.count, dataCount)
     }
     
-    func bind(_ model: BookmarkViewModel) {
+    func bind(_ model: CoreDataViewModel) {
         viewModel = model
         
-        // fetch 후 colletion view에 반영
+        // 최초 fetch 후 colletion view에 반영
         viewModel
             .bookmarkItems
             .drive(self.rx.bookmarkDataSource)
             .disposed(by: disposeBag)
         
-        // data 변경 시 reloadData
         viewModel
-            .isUpdated
-            .emit(to: self.rx.isBookmarkUpdated)
+            .bookmarkCount
+            .drive(self.rx.isBookmarkUpdated)
             .disposed(by: disposeBag)
             
     }

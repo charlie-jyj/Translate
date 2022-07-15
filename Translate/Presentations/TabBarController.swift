@@ -26,10 +26,10 @@ class TabBarController: UITabBarController {
         let translateViewController = TranslateViewController()
         let bookmarkViewController = BookmarkViewController(collectionViewLayout: UICollectionViewFlowLayout())
         translateViewController.bind(viewModel.translateViewModel)
-        bookmarkViewController.bind(viewModel.bookmarkViewModel)
+        bookmarkViewController.bind(viewModel)
         
         Observable.just("viewDidLoad")
-            .bind(to: viewModel.bookmarkViewModel.viewdidload)
+            .bind(to: viewModel.viewdidload)
             .disposed(by: disposeBag)
        
         translateViewController.tabBarItem = UITabBarItem(
