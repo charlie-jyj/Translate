@@ -16,10 +16,10 @@ protocol SourceTextViewDelegate: AnyObject {
 
 class SourceTextViewController: UIViewController {
     
-    private let placeholderText = "텍스트 입력"
-    private weak var delegate: SourceTextViewDelegate?
     var viewModel: SourceTextViewModel?
     let disposeBag = DisposeBag()
+    private let placeholderText = "텍스트 입력"
+    private weak var delegate: SourceTextViewDelegate?
     
     private lazy var textView: UITextView = {
         let textView = UITextView()

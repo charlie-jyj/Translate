@@ -119,6 +119,16 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         return button
     }()
     
+    private lazy var recordButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "mic.badge.plus"), for: .normal)
+        button.setImage(UIImage(systemName: "mic.fill.badge.plus"), for: .selected)
+        button.addTarget(self, action: #selector(didTapRecordButton), for: .touchUpInside)
+        button.backgroundColor = .secondarySystemBackground
+        button.layer.cornerRadius = 10.0
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         definesPresentationContext = true
@@ -166,7 +176,8 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
             copyButton,
             voiceButton,
             sourceBaseView,
-            sourceTextLabel
+            sourceTextLabel,
+            recordButton
         ].forEach {
             view.addSubview($0)
         }
@@ -223,6 +234,13 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
             $0.top.equalTo(sourceBaseView.snp.top).inset(24)
             $0.leading.equalTo(resultTextLabel.snp.leading)
             $0.trailing.equalTo(resultTextLabel.snp.trailing)
+        }
+        
+        recordButton.snp.makeConstraints {
+            $0.trailing.equalTo(sourceBaseView.snp.trailing).inset(16)
+            $0.bottom.equalTo(sourceBaseView.snp.bottom).inset(64)
+            $0.width.equalTo(80)
+            $0.height.equalTo(80)
         }
     }
     
@@ -347,7 +365,12 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
             synthesizer.speak(utterance)
         }
     }
-
+    
+    @objc func didTapRecordButton() {
+        let vc = RecorderViewController()
+        vc.bind(viewModel.recorderViewModel)
+        present(vc, animated: true, completion: nil)
+    }
 }
 
 

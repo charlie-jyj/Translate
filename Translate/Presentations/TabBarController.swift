@@ -34,9 +34,9 @@ class TabBarController: UITabBarController {
        
         translateViewController.tabBarItem = UITabBarItem(
             title: "번역",
-            image: UIImage(systemName: "mic"),
+            image: UIImage(systemName: "character"),
             tag: 0)
-        translateViewController.tabBarItem.selectedImage = UIImage(systemName: "mic.fill")
+        translateViewController.tabBarItem.selectedImage = UIImage(systemName: "character.cursor.ibeam")
         bookmarkViewController.tabBarItem = UITabBarItem(
             title: "Bookmark",
             image: UIImage(systemName: "star"),

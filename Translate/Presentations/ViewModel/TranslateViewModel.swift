@@ -16,6 +16,7 @@ struct TranslateViewModel {
   
     //subViewModels
     var sourceTextViewModel = SourceTextViewModel()
+    var recorderViewModel = RecorderViewModel()
     var apiViewModel = APIViewModel()
     
     // viewModel -> view

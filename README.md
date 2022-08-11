@@ -5,7 +5,7 @@
 
 ###1-1 major 구현 목표
 
-1. 입력한 텍스트를 번역한다. (done)
+1. 입력한 텍스트를 번역한다. (check)
 2. 음성을 텍스트화 하고 `Dictation` 그 텍스트를 번역한다.
 3. 번역하고 번역된 결과를 핸드폰이 읽어준다. 
 
@@ -13,13 +13,14 @@
 1. data 삭제 구현
 2. 네트워크 연결 확인하고 alert
 3. Siri kit을 사용하여 명령어로 동작한다. `App Intents API` (적용 시 setup 필요하지 않을 것)
-4. widget을 사용하여 최신 번역 텍스트를 확인한다.
 
 
 ### index
 - 0711 coredata fetch 구현중
 - 0713 coredata 사용한 bookmark 구현 끝
-- 0714 save후 fetch data 가 뷰에 반영되지 않는 오류  <해결>
+- 0714 save후 fetch data 가 뷰에 반영되지 않는 오류 
+- 0811 speechRecognizer 추가 완료, 음성 녹음 중이라는걸 확인하기 위한 view 생성
+- 0812 speechRecognizer 이벤트 바인딩 예정
 
 #### iOS
 

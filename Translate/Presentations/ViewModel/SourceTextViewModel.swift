@@ -17,9 +17,7 @@ struct SourceTextViewModel {
     
     // viewModel -> viewModel
     let documentData = PublishSubject<String>()
-    
-    // super viewModel
-    
+ 
     init() {
         doneButtonTapped
             .withLatestFrom(sourceTextViewContent)
