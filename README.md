@@ -18,9 +18,9 @@
 ### index
 - 0711 coredata fetch 구현중
 - 0713 coredata 사용한 bookmark 구현 끝
-- 0714 save후 fetch data 가 뷰에 반영되지 않는 오류 
+- 0714 save후 fetch data 가 뷰에 반영되지 않는 오류 해결
 - 0811 speechRecognizer 추가 완료, 음성 녹음 중이라는걸 확인하기 위한 view 생성
-- 0812 speechRecognizer 이벤트 바인딩 예정
+- 0812 speechRecognizer 이벤트 바인딩, bookmark에 읽기 버튼 추가 예정
 
 #### iOS
 
