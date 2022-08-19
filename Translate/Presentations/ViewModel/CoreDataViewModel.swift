@@ -10,54 +10,41 @@ import RxSwift
 import RxCocoa
 import CoreData
 
-//CoreData controller (create and manage)
+enum FetchItemsResult {
+    case success([Item])
+    case failure(Error)
+}
+
+enum SaveItemResult {
+    case success
+    case failure
+}
+
+//CoreData controller (create and manage) 최상위 뷰모델
 class CoreDataViewModel {
     
+    var context: NSManagedObjectContext!
     private lazy var persistentContainer: NSPersistentContainer = {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
         return appDelegate!.persistentContainer
     }()
-    
     let disposeBag = DisposeBag()
-    let translateViewModel = TranslateViewModel()
-    var context: NSManagedObjectContext!
     
-    // viewModel -> view
-    var bookmarkItems: Driver<[Item]>
-    var bookmarkCount: Driver<Int>
-
+    // subviewModel
+    let translateViewModel = TranslateViewModel()
+    let bookmarkViewModel = BookmarkViewModel()
     
     // view -> viewModel
-    let viewdidload = PublishRelay<String>()
+    let viewdidload = PublishRelay<Bool>()
     
     // viewModel -> viewModel
-    let fetchData = BehaviorSubject<[Item]>(value: [])
-    let fetchDataCount = BehaviorSubject<Int>(value: 0)
-    let isFetched = PublishSubject<String>()
     
     init() {
-        
-        isFetched
-            .subscribe(onNext: { (message) in
-                print(message)
-            })
-            .disposed(by: disposeBag)
-        
-        bookmarkItems = isFetched
-            .withLatestFrom(fetchData)
-            .map { $0 }
-            .asDriver(onErrorJustReturn: [])
-        
-        bookmarkCount = isFetched
-            .withLatestFrom(fetchDataCount)
-            .asDriver(onErrorJustReturn: 0)
-        
         openDatabase()
         
         translateViewModel
             .tapBookmarkButton
             .subscribe(onNext: { [weak self] (bookmark) in
-                print(bookmark.sourceContent,"=>",bookmark.targetContent)
                 if let _context = self?.context,
                    let createDate = self?.currentDateTime() {
                     let entity = NSEntityDescription.entity(forEntityName: "Item", in: _context)
@@ -66,22 +53,19 @@ class CoreDataViewModel {
                     newBookmark.setValue(createDate, forKey: "createDate")
                     self?.saveContext()
                 }
-                
-           
             })
             .disposed(by: disposeBag)
-        
+   
         //viewDidLoad 시점에 fetch
         viewdidload
             .subscribe(onNext: { (signal) in
-                if signal == "viewDidLoad" {
+                if signal {
                     let completion = {[weak self] (result: FetchItemsResult) -> Void in
                         switch result {
                         case .success(let items):
-                            print("viewdidload fetch: \(items)")
-                            if  let _fetchData = self?.fetchData,
-                                let _fetchDataCount = self?.fetchDataCount,
-                                let _isFetched = self?.isFetched {
+                            if  let _fetchData = self?.bookmarkViewModel.fetchData,
+                                let _fetchDataCount = self?.bookmarkViewModel.fetchDataCount,
+                                let _isFetched = self?.bookmarkViewModel.isFetched {
                         
                                 _fetchData
                                     .on(.next(items))
@@ -90,7 +74,7 @@ class CoreDataViewModel {
                                     .on(.next(items.count))
                                 
                                 _isFetched
-                                    .on(.next("fetched"))
+                                    .on(.next(true))
                             }
                         case .failure(let error):
                             print("fetch error: \(error.localizedDescription)")
@@ -98,6 +82,8 @@ class CoreDataViewModel {
                     }
                     
                     self.fetchPersistedData(completion: completion)
+                } else {
+                    print("view did load not occured")
                 }
             })
             .disposed(by: disposeBag)
@@ -133,17 +119,26 @@ class CoreDataViewModel {
                 case .success(let items):
                     print("after save: \(items)")
                     
-                    self.fetchData
+                    self.bookmarkViewModel.fetchData
                         .on(.next(items))
                     
-                    self.fetchDataCount
+                    self.bookmarkViewModel.fetchDataCount
                         .on(.next(items.count))
                     
-                    self.isFetched
-                        .on(.next("fetched after saving"))
-                
+                    self.bookmarkViewModel.isFetched
+                        .on(.next(true))
+                    
+                    self.bookmarkViewModel.isSaved
+                        .on(.next(true))
+                    
                 case .failure(let error):
                     print("fetch error: \(error.localizedDescription)")
+                    
+                    self.bookmarkViewModel.isFetched
+                        .on(.next(false))
+                    
+                    self.bookmarkViewModel.isSaved
+                        .on(.next(false))
                 }
             }
             
@@ -152,7 +147,6 @@ class CoreDataViewModel {
         }
     }
     
-    //TOBE: fetch 결과 전달 방식을 clousure => rx로 수정
     func fetchPersistedData(completion: @escaping (FetchItemsResult) -> Void) {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Item")
         fetchRequest.returnsObjectsAsFaults = false
@@ -164,10 +158,4 @@ class CoreDataViewModel {
             completion(.failure(error))
         }
     }
-    
-    enum FetchItemsResult {
-        case success([Item])
-        case failure(Error)
-    }
-
 }

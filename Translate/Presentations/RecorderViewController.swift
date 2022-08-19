@@ -96,8 +96,8 @@ class RecorderViewController: UIViewController {
         animationView!.animationSpeed = 0.5
         view.addSubview(animationView!)
         animationView!.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(16)
-            $0.trailing.equalToSuperview().inset(16)
+            $0.leading.equalToSuperview().inset(24)
+            $0.trailing.equalToSuperview().inset(24)
         }
         animationView!.play()
     }

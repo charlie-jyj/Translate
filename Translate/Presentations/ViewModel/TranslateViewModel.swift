@@ -24,7 +24,7 @@ struct TranslateViewModel {
     let targetLabelText: Driver<String>
     let languageList: Signal<[LanguageType]>
     let changeLanguageButton: Signal<ButtonStyle>
-    
+   
     // view -> viewModel
     let tapLanguageButton = PublishRelay<ButtonType>()
     let tapAlertActionSheetLanguage = PublishRelay<LanguageType>()
@@ -71,8 +71,5 @@ struct TranslateViewModel {
             .afterTranslated
             .map { $0.text }
             .asDriver(onErrorJustReturn: "translated text load is failed")
-            
-        
-                
     }
 }

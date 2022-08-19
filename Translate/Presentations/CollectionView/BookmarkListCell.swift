@@ -18,6 +18,12 @@ class BookmarkListCell: UICollectionViewCell {
         return stack
     }()
     
+    private lazy var hstackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        return stack
+    }()
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         return scrollView
@@ -52,18 +58,26 @@ class BookmarkListCell: UICollectionViewCell {
         label.numberOfLines = 0
         return label
     }()
-    
+   
+    private lazy var voiceButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "speaker.wave.2"), for: .normal)
+        button.setImage(UIImage(systemName: "speaker.wave.2.fill"), for: .selected)
+        button.toolTip = "text to speech"
+        button.addTarget(self, action: #selector(didTapSpeechButton), for: .touchUpInside)
+        return button
+    }()
+  
     func setContentOfCell(_ bookmark: Bookmark) {
         sourceLanguageLabel.text = bookmark.sourceLanguage
         sourceTextLabel.text = bookmark.sourceContent
         targetLanguageLabel.text = bookmark.targetLanguage
         targetTextLabel.text = bookmark.targetContent
-        
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = .systemBackground
         contentView.layer.cornerRadius = 5
         contentView.clipsToBounds = true
         
@@ -84,7 +98,7 @@ class BookmarkListCell: UICollectionViewCell {
         }
         
         [
-            sourceLanguageLabel,
+            hstackView,
             sourceTextLabel,
             targetLanguageLabel,
             targetTextLabel
@@ -92,5 +106,29 @@ class BookmarkListCell: UICollectionViewCell {
             stackView.addArrangedSubview($0)
         }
         
+        [
+            sourceLanguageLabel,
+            voiceButton
+        ].forEach {
+            hstackView.addArrangedSubview($0)
+        }
+        
+        hstackView.snp.makeConstraints {
+            $0.leading.equalTo(stackView.snp.leading)
+            $0.trailing.equalTo(stackView.snp.trailing)
+        }
+    }
+    
+    @objc func didTapSpeechButton() {
+        if let targetText = targetTextLabel.text {
+            guard let langType = LanguageType.allCases.filter({ language in
+                language.rawValue == targetLanguageLabel.text
+            }).first
+            else { return }
+            
+            let speechSynthesizer = SpeechSynthesizer(text: targetText,
+                                                      languageType: langType)
+            speechSynthesizer.speak()
+        }
     }
 }

@@ -12,7 +12,6 @@
 ###1-2 minor 구현 목표
 1. data 삭제 구현
 2. 네트워크 연결 확인하고 alert
-3. Siri kit을 사용하여 명령어로 동작한다. `App Intents API` (적용 시 setup 필요하지 않을 것)
 
 
 ### index
@@ -20,7 +19,12 @@
 - 0713 coredata 사용한 bookmark 구현 끝
 - 0714 save후 fetch data 가 뷰에 반영되지 않는 오류 해결
 - 0811 speechRecognizer 추가 완료, 음성 녹음 중이라는걸 확인하기 위한 view 생성
-- 0812 speechRecognizer 이벤트 바인딩, bookmark에 읽기 버튼 추가 예정
+- 0817 bookmark에 읽기 버튼 추가
+- 0818 북마크 버튼 클릭의 이벤트 필요, 삭제 기능 필요 -> swipe 삭제 하고 싶어서 layout 변경 -> 원복
+    - collection view list는 모양 내는 데에 한계가 있다.
+    - view model 설계 수정
+- 북마크 저장 성공/실패 시 alert로 알림 (TOBE)
+- STT 이벤트 바인딩 (TOBE)
 
 #### iOS
 
@@ -303,6 +307,16 @@ extension KeyedDecodingContainer {
 - language에 기본값을 주고 싶어서 사용했다.
 - 그 외의 경우에는 PublishRelay를 사용했다.
 
+> https://tech.instacart.com/how-to-think-about-subjects-in-rxjava-part-1-ca509b981020
+> https://stackoverflow.com/questions/50020345/behaviorsubject-vs-publishsubject
+
+- subject라는 것 자체가 observable과 subscriber 사이의 proxy bridge라고 이해
+- 따라서 subject는 pass through 하면서 동시에 subscribe 한다
+- A event가 (1,2,3)을 emit 한 후 구독했고 B event (4,5,6) 이 대기 중일 때
+    - PublishSubject(Relay)는 4,5,6 을 받는다.
+    - BehaviorSubject(Relay)는 3,4,5,6 을 받는다.
+    - ReplaySubject(Relay)는 1,2,3,4,5,6 을 받는다.
+
 #### Signal vs Binder
 
 - 현재는 혼재해서 사용하고 있는데..
@@ -316,7 +330,7 @@ extension KeyedDecodingContainer {
     let changeLanguageButton: Signal<LanguageOption>
 ```
 
-- sourceLabelText는 text를 label에 뿌려주고, 이 값으로 network 통신을 해야하기 때문에, 새로운 구독자를 염두에 두고 driver를 사용하는 것이 적당할 것으로 보인다.
+- sourceLabelText는 text를 label에 뿌려주고, 이 값으로 network 통신을 해야하기 때문에, 새로운 구독자를 염두에 두고 driver를 사용하기로 했다.
 - 이 외에는 Signal을 사용하였다.
 
 #### 😍Alamofire😍 (효자)

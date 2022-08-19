@@ -115,7 +115,6 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         button.setImage(UIImage(systemName: "speaker.wave.2.fill"), for: .selected)
         button.toolTip = "text to speech"
         button.addTarget(self, action: #selector(didTapSpeechButton), for: .touchUpInside)
-        button.toolTipInteraction?.delegate = self
         return button
     }()
     
@@ -307,7 +306,8 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
         if let _sourceText = sourceTextLabel.text,
            _sourceText != sourcePlaceholderText,
            let _targetText = resultTextLabel.text,
-           _targetText != "" {
+           _targetText != ""
+        {
             let bookmark = Bookmark(_sourceLanguage: viewModel.sourceLanguage.value.title,
                                     _targetLanguage: viewModel.targetLanguage.value.title,
                                     _sourceContent: _sourceText,
@@ -315,6 +315,11 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
             Observable.just(bookmark)
                 .bind(to: viewModel.tapBookmarkButton)
                 .disposed(by: disposeBag)
+        }
+        
+        // 화면 이동
+        if let tabBarController = tabBarController {
+            tabBarController.selectedIndex = 1
         }
        
     }
@@ -351,18 +356,9 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
     @objc func didTapSpeechButton() {
         // text to speech
         if let translatedText = resultTextLabel.text {
-            let utterance = AVSpeechUtterance(string: translatedText)
-            var language: String
-            switch viewModel.targetLanguage.value {
-            case .English: language = "en-US"
-            case .Japanese: language = "ja-JP"
-            case .Korean: language = "ko-KR"
-            case .Spanish: language = "es-ES"
-            }
-            utterance.voice = AVSpeechSynthesisVoice(language: language)
-            utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-            let synthesizer = AVSpeechSynthesizer()
-            synthesizer.speak(utterance)
+            let speechSynthesizer = SpeechSynthesizer(text: translatedText,
+                                                      languageType: viewModel.targetLanguage.value)
+            speechSynthesizer.speak()
         }
     }
     
@@ -403,7 +399,8 @@ extension Reactive where Base: TranslateViewController {
             let alertViewController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
             
             let callback: ((UIAlertAction)->Void)  = { action in
-                guard let language = LanguageType.allCases.filter({ $0.rawValue == action.title}).first else { return }
+                guard let language = action.title?.convertRawToLanguageType()
+                else { return }
                 Observable.just(language)
                     .bind(to: base.viewModel.tapAlertActionSheetLanguage)
                     .disposed(by: base.disposeBag)

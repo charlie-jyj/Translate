@@ -13,9 +13,9 @@ import CoreData
 
 class BookmarkViewController: UICollectionViewController {
     
-    var viewModel: CoreDataViewModel!
+    var viewModel: BookmarkViewModel!
     let disposeBag = DisposeBag()
-    var bookmarkData: [Item] = []
+    var dataSource: [Item] = []
     var dataCount: Int = 0
 
     override func viewDidLoad() {
@@ -26,21 +26,20 @@ class BookmarkViewController: UICollectionViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         collectionView.reloadData()
-        print("bookmarkviewwillappear", bookmarkData.count, dataCount)
     }
     
-    func bind(_ model: CoreDataViewModel) {
+    func bind(_ model: BookmarkViewModel) {
         viewModel = model
         
         // 최초 fetch 후 colletion view에 반영
         viewModel
             .bookmarkItems
-            .drive(self.rx.bookmarkDataSource)
+            .drive(self.rx.dataSourceBase)
             .disposed(by: disposeBag)
         
         viewModel
             .bookmarkCount
-            .drive(self.rx.isBookmarkUpdated)
+            .drive(self.rx.bookmarkCount)
             .disposed(by: disposeBag)
             
     }
@@ -57,22 +56,13 @@ class BookmarkViewController: UICollectionViewController {
         collectionView.collectionViewLayout = layout()
     }
     
-    /*
-     typealias UICollectionViewCompositionalLayoutSectionProvider = (Int, NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection?
-     */
-    
     private func layout() -> UICollectionViewLayout {
         return UICollectionViewCompositionalLayout { [weak self] index, environment -> NSCollectionLayoutSection? in
             return self?.getCollectionLayoutSection()
         }
     }
     
-    private func createSectionHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
-        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(32))
-        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        return header
-    }
-    
+    // 구 레이아웃
     private func getCollectionLayoutSection() -> NSCollectionLayoutSection {
         
         //1. item
@@ -97,9 +87,15 @@ class BookmarkViewController: UICollectionViewController {
         return section
     }
     
-    func setBookmarkData(items: [Item]) {
+    private func createSectionHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
+        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(32))
+        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        return header
+    }
+    
+    func setdataSource(items: [Item]) {
         print("set bookmark data", items)
-        bookmarkData = items
+        dataSource = items
         collectionView.reloadData()
     }
     
@@ -110,19 +106,18 @@ class BookmarkViewController: UICollectionViewController {
 }
 
 extension Reactive where Base: BookmarkViewController {
-    var bookmarkDataSource: Binder<[Item]> {
+    var dataSourceBase: Binder<[Item]> {
         return Binder(base) { base, items in
-            base.setBookmarkData(items: items)
+            base.setdataSource(items: items)
         }
     }
     
-    var isBookmarkUpdated: Binder<Int> {
+    var bookmarkCount: Binder<Int> {
         return Binder(base) { base, cnt in
             base.reloadCollectionView(cnt: cnt)
         }
     }
 }
-
 
 extension BookmarkViewController {
 
@@ -131,6 +126,7 @@ extension BookmarkViewController {
      */
     
     // section 수
+    // TOBE: 언어 별로 분류하자
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -143,7 +139,7 @@ extension BookmarkViewController {
     // cell 내용 결정
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BookmarkListCell", for: indexPath) as? BookmarkListCell else { return UICollectionViewCell() }
-        let item = bookmarkData[indexPath.last!]
+        let item = dataSource[indexPath.last!]
         cell.setContentOfCell(item.bookmark)
         return cell
     }
@@ -162,6 +158,4 @@ extension BookmarkViewController {
     /*
      Delegate
      */
-    
-    
 }

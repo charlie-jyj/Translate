@@ -11,8 +11,14 @@ import RxCocoa
 
 struct RecorderViewModel {
     let disposeBag = DisposeBag()
+    let speechRecognizer: SpeechRecognizer?
     
     // view -> viewModel
+    let tapLanguageButton = PublishRelay<String>()
+    
+    init() {
+        speechRecognizer = SpeechRecognizer(locale: Locale(identifier: "ko_KR"))
+    }
     
 }
 
