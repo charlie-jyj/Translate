@@ -8,7 +8,9 @@
 import UIKit
 import SnapKit
 
+// custom cell
 class BookmarkListCell: UICollectionViewCell {
+    var bookmark: Bookmark?
     
     private lazy var stackView: UIStackView = {
         let stack = UIStackView()
@@ -69,6 +71,7 @@ class BookmarkListCell: UICollectionViewCell {
     }()
   
     func setContentOfCell(_ bookmark: Bookmark) {
+        self.bookmark = bookmark
         sourceLanguageLabel.text = bookmark.sourceLanguage
         sourceTextLabel.text = bookmark.sourceContent
         targetLanguageLabel.text = bookmark.targetLanguage

@@ -47,6 +47,7 @@
 		6ADE01BD28ACDD1D00E2A4BF /* SpeechSynthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ADE01BC28ACDD1D00E2A4BF /* SpeechSynthesizer.swift */; };
 		6ADE01BF28ADCBF200E2A4BF /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ADE01BE28ADCBF200E2A4BF /* Extensions.swift */; };
 		6ADE01C128AE36A000E2A4BF /* BookmarkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ADE01C028AE36A000E2A4BF /* BookmarkViewModel.swift */; };
+		6ADE01C428AF529B00E2A4BF /* SwipeCellKit in Frameworks */ = {isa = PBXBuildFile; productRef = 6ADE01C328AF529B00E2A4BF /* SwipeCellKit */; };
 		6AE78FC52828D3BB00A05115 /* BookmarkListHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FC42828D3BB00A05115 /* BookmarkListHeader.swift */; };
 		6AE78FC72828D3C800A05115 /* BookmarkListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE78FC62828D3C800A05115 /* BookmarkListCell.swift */; };
 		6AE9324D2825041B00FBF607 /* LanguageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AE9324C2825041B00FBF607 /* LanguageType.swift */; };
@@ -140,6 +141,7 @@
 				6ADE01B228ACCFEB00E2A4BF /* RxCocoa in Frameworks */,
 				6ADE01A728ACCD6A00E2A4BF /* Alamofire in Frameworks */,
 				6ADE01AF28ACCF3C00E2A4BF /* Lottie in Frameworks */,
+				6ADE01C428AF529B00E2A4BF /* SwipeCellKit in Frameworks */,
 				6ADE01B628ACCFEB00E2A4BF /* RxSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,6 +322,7 @@
 				6ADE01B328ACCFEB00E2A4BF /* RxRelay */,
 				6ADE01B528ACCFEB00E2A4BF /* RxSwift */,
 				6ADE01B828ACD09100E2A4BF /* SnapKit */,
+				6ADE01C328AF529B00E2A4BF /* SwipeCellKit */,
 			);
 			productName = Translate;
 			productReference = 6A1769CE2819224C004AF6C8 /* Translate.app */;
@@ -358,6 +361,7 @@
 				6ADE01AD28ACCF3C00E2A4BF /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				6ADE01B028ACCFEB00E2A4BF /* XCRemoteSwiftPackageReference "RxSwift" */,
 				6ADE01B728ACD09100E2A4BF /* XCRemoteSwiftPackageReference "SnapKit" */,
+				6ADE01C228AF529B00E2A4BF /* XCRemoteSwiftPackageReference "SwipeCellKit" */,
 			);
 			productRefGroup = 6A1769CF2819224C004AF6C8 /* Products */;
 			projectDirPath = "";
@@ -766,6 +770,14 @@
 				minimumVersion = 5.0.0;
 			};
 		};
+		6ADE01C228AF529B00E2A4BF /* XCRemoteSwiftPackageReference "SwipeCellKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwipeCellKit/SwipeCellKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -813,6 +825,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6ADE01A828ACCEA700E2A4BF /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		6ADE01C328AF529B00E2A4BF /* SwipeCellKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6ADE01C228AF529B00E2A4BF /* XCRemoteSwiftPackageReference "SwipeCellKit" */;
+			productName = SwipeCellKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -12,12 +12,40 @@ import RxCocoa
 import CoreData
 
 class BookmarkViewController: UICollectionViewController {
-    
-    var viewModel: BookmarkViewModel!
-    let disposeBag = DisposeBag()
-    var dataSource: [Item] = []
-    var dataCount: Int = 0
 
+    var viewModel: BookmarkViewModel!
+    var items: [Item] = []
+    var dataCount: Int = 0
+    private lazy var dataSource: UICollectionViewDiffableDataSource<Section, Item> = {
+        let cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, Item> { cell, index, item in
+            
+            var content = cell.defaultContentConfiguration()
+            content.text = item.bookmark.targetContent
+            content.secondaryText = item.bookmark.sourceContent
+            content.secondaryTextProperties.color = .secondaryLabel
+            content.secondaryTextProperties.font = .preferredFont(forTextStyle: .subheadline)
+            cell.contentConfiguration = content
+            cell.tintColor = .mainTintColor
+            cell.accessories = [
+                .customView(configuration: .init(
+                    customView: UIImageView(image: UIImage(systemName: "speaker.circle")),
+                                            placement: .trailing())
+                ),
+                .reorder(),
+                .delete()
+            ]
+        }
+        return UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { (collectionView, indexPath, item) -> UICollectionViewCell? in
+            collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
+        }
+    }()
+    
+    let disposeBag = DisposeBag()
+
+    private enum Section: CaseIterable {
+        case main
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         attribute()
@@ -44,64 +72,66 @@ class BookmarkViewController: UICollectionViewController {
             
     }
     
-    private func attribute() {
-        
-        collectionView.backgroundColor = .secondarySystemBackground
-        
-        // register
-        collectionView.register(BookmarkListCell.self, forCellWithReuseIdentifier: "BookmarkListCell")
-        collectionView.register(BookmarkListHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "BookmarkListHeader")
-        
-        // layout
-        collectionView.collectionViewLayout = layout()
-    }
-    
-    private func layout() -> UICollectionViewLayout {
-        return UICollectionViewCompositionalLayout { [weak self] index, environment -> NSCollectionLayoutSection? in
-            return self?.getCollectionLayoutSection()
-        }
-    }
-    
-    // 구 레이아웃
-    private func getCollectionLayoutSection() -> NSCollectionLayoutSection {
-        
-        //1. item
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = .init(top: 8.0, leading: 16.0, bottom: 8.0, trailing: 16.0)
-        
-        // 2. group
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalHeight(0.75))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitem: item, count: 3)
-        //let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-        
-        // 3. section
-        let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = .init(top: 24.0, leading: 16.0, bottom: 0.0, trailing: 16.0)
-        
-        // 4. header
-        let header = createSectionHeader()
-        section.boundarySupplementaryItems = [header]
-        
-        return section
-    }
-    
-    private func createSectionHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
-        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(32))
-        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        return header
-    }
-    
     func setdataSource(items: [Item]) {
         print("set bookmark data", items)
-        dataSource = items
+        self.items = items
         collectionView.reloadData()
     }
     
     func reloadCollectionView(cnt: Int) {
         dataCount = cnt
         collectionView.reloadData()
+    }
+    
+    private func attribute() {
+        self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.navigationItem.rightBarButtonItem?.primaryAction = UIAction(title:"Edit") { _ in
+            self.setEditing(!self.isEditing, animated: true)
+        }
+        
+        collectionView.backgroundColor = .secondarySystemBackground
+        
+        // layout
+        var config = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        config.backgroundColor = .secondarySystemBackground
+        config.trailingSwipeActionsConfigurationProvider = { indexPath in
+            let delete = UIContextualAction(style: .destructive,
+                                            title: "Delete") { action, view, completion in
+                completion(true)
+            }
+            let swipe = UISwipeActionsConfiguration(actions: [delete])
+            return swipe
+        }
+        collectionView.collectionViewLayout = layout(config: config)
+        
+        // datasource 적용
+        applySnapshot(animatingDifferences: false)
+        self.dataSource.reorderingHandlers.canReorderItem = { item in return true }
+    }
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        self.collectionView.isEditing = editing
+    }
+    
+    private func applySnapshot(animatingDifferences: Bool = true) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections(Section.allCases)
+        snapshot.appendItems(items)
+        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+    }
+    
+    private func layout(config: UICollectionLayoutListConfiguration) -> UICollectionViewLayout {
+        return UICollectionViewCompositionalLayout.list(using: config)
+    }
+ 
+    private func delete(at indexPath: IndexPath) {
+        // + coredata에서 삭제하는 것 또한
+        var snapshot = self.dataSource.snapshot()
+        if let id = self.dataSource.itemIdentifier(for: indexPath) {
+            snapshot.deleteItems([id])
+        }
+        self.dataSource.apply(snapshot)
     }
 }
 
@@ -120,42 +150,11 @@ extension Reactive where Base: BookmarkViewController {
 }
 
 extension BookmarkViewController {
-
-    /*
-     DataSource
-     */
-    
-    // section 수
-    // TOBE: 언어 별로 분류하자
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    // section 별 item 수
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataCount
-    }
-    
-    // cell 내용 결정
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "BookmarkListCell", for: indexPath) as? BookmarkListCell else { return UICollectionViewCell() }
-        let item = dataSource[indexPath.last!]
-        cell.setContentOfCell(item.bookmark)
-        return cell
-    }
-    
-    // header 결정
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if kind == UICollectionView.elementKindSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "BookmarkListHeader", for: indexPath) as? BookmarkListHeader else { return UICollectionReusableView() }
-            header.setNameLabel("Bookmark")
-            return header
-        } else {
-            return UICollectionReusableView()
+    // drag 하더라도 section은 벗어나지 않도록
+    override func collectionView(_ collectionView: UICollectionView, targetIndexPathForMoveOfItemFromOriginalIndexPath originalIndexPath: IndexPath, atCurrentIndexPath currentIndexPath: IndexPath, toProposedIndexPath proposedIndexPath: IndexPath) -> IndexPath {
+        if originalIndexPath.section == proposedIndexPath.section {
+            return proposedIndexPath
         }
+        return originalIndexPath
     }
-    
-    /*
-     Delegate
-     */
 }

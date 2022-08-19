@@ -21,8 +21,7 @@
 - 0811 speechRecognizer 추가 완료, 음성 녹음 중이라는걸 확인하기 위한 view 생성
 - 0817 bookmark에 읽기 버튼 추가
 - 0818 북마크 버튼 클릭의 이벤트 필요, 삭제 기능 필요 -> swipe 삭제 하고 싶어서 layout 변경 -> 원복
-    - collection view list는 모양 내는 데에 한계가 있다.
-    - view model 설계 수정
+- 0819 collection view list는 모양 내는 데에 한계가 있다, view model 설계 수정, layout list로 수정
 - 북마크 저장 성공/실패 시 alert로 알림 (TOBE)
 - STT 이벤트 바인딩 (TOBE)
 
@@ -143,6 +142,40 @@ textView.attributedText = text
 `UICollectionViewLayout`
 - UICollectionViewCompositionalLayout
 - NSCollectionLayoutSection
+
+https://www.biteinteractive.com/collection-view-lists-in-ios-14-part-2/
+- 드래그하여 삭제 기능 만들기
+
+- UICollectionViewDiffableDataSource 🚛
+```swift
+    private lazy var dataSource: UICollectionViewDiffableDataSource<Section, Item> = {
+        let cellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, Item> { cell, index, item in
+            
+            var content = cell.defaultContentConfiguration()
+            content.text = item.bookmark.targetContent
+            content.secondaryText = item.bookmark.sourceContent
+            content.secondaryTextProperties.color = .secondaryLabel
+            content.secondaryTextProperties.font = .preferredFont(forTextStyle: .subheadline)
+            content.image = UIImage(systemName: "globe")
+            content.imageProperties.preferredSymbolConfiguration = .init(font: content.textProperties.font, scale: .large)
+            cell.contentConfiguration = content
+            cell.tintColor = .mainTintColor
+            cell.accessories = [.customView(configuration: .init(customView: UIImageView(image: UIImage(systemName: "speaker.circle")), placement: .trailing()))]
+        }
+        return UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { (collectionView, indexPath, item) -> UICollectionViewCell? in
+            collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: item)
+        }
+    }()
+    
+        private func applySnapshot(animatingDifferences: Bool = true) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections(Section.allCases)
+        snapshot.appendItems(items)
+        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+    }
+```
+- collection view의 datasource와 cell을 구현하기 위한 boiler plate 코드보다 편리하다
+
 
 ###### error 1
 ```

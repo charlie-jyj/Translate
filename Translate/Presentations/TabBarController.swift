@@ -43,7 +43,9 @@ class TabBarController: UITabBarController {
             tag: 1)
         bookmarkViewController.tabBarItem.selectedImage = UIImage(systemName: "star.fill")
        
-        let viewControllers = [translateViewController, bookmarkViewController]
+        let viewControllers = [
+            translateViewController,
+            UINavigationController(rootViewController: bookmarkViewController)]
         setViewControllers(viewControllers, animated: true)
         
         tabBar.backgroundColor = .secondarySystemBackground
