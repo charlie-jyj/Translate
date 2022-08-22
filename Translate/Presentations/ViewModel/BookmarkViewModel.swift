@@ -14,8 +14,10 @@ struct BookmarkViewModel {
     
     // viewModel -> view
     var bookmarkItems: Driver<[Item]>
-    var bookmarkCount: Driver<Int>
     let showSaveAlert: Signal<SaveItemResult>
+    
+    // view -> viewModel
+    let tapDeleteButton = PublishRelay<Item>()
     
     // viewModel -> viewModel
     let isFetched = PublishSubject<Bool>()
@@ -29,11 +31,6 @@ struct BookmarkViewModel {
             .withLatestFrom(fetchData)
             .asDriver(onErrorJustReturn: [])
         
-        bookmarkCount = isFetched
-            .filter { $0 }
-            .withLatestFrom(fetchDataCount)
-            .asDriver(onErrorJustReturn: 0)
-        
         showSaveAlert = isSaved
             .map {
                 if $0 {
@@ -43,5 +40,6 @@ struct BookmarkViewModel {
                 }
             }
             .asSignal(onErrorJustReturn: SaveItemResult.failure)
+        
     }
 }

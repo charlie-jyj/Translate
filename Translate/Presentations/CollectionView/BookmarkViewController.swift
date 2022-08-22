@@ -53,7 +53,7 @@ class BookmarkViewController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        collectionView.reloadData()
+        applySnapshot()
     }
     
     func bind(_ model: BookmarkViewModel) {
@@ -64,23 +64,11 @@ class BookmarkViewController: UICollectionViewController {
             .bookmarkItems
             .drive(self.rx.dataSourceBase)
             .disposed(by: disposeBag)
-        
-        viewModel
-            .bookmarkCount
-            .drive(self.rx.bookmarkCount)
-            .disposed(by: disposeBag)
-            
     }
     
     func setdataSource(items: [Item]) {
-        print("set bookmark data", items)
         self.items = items
-        collectionView.reloadData()
-    }
-    
-    func reloadCollectionView(cnt: Int) {
-        dataCount = cnt
-        collectionView.reloadData()
+        applySnapshot()
     }
     
     private func attribute() {
@@ -97,7 +85,7 @@ class BookmarkViewController: UICollectionViewController {
         config.trailingSwipeActionsConfigurationProvider = { indexPath in
             let delete = UIContextualAction(style: .destructive,
                                             title: "Delete") { action, view, completion in
-                completion(true)
+                self.deleteItem(at: indexPath)
             }
             let swipe = UISwipeActionsConfiguration(actions: [delete])
             return swipe
@@ -125,13 +113,14 @@ class BookmarkViewController: UICollectionViewController {
         return UICollectionViewCompositionalLayout.list(using: config)
     }
  
-    private func delete(at indexPath: IndexPath) {
-        // + coredata에서 삭제하는 것 또한
+    private func deleteItem(at indexPath: IndexPath) {
         var snapshot = self.dataSource.snapshot()
-        if let id = self.dataSource.itemIdentifier(for: indexPath) {
-            snapshot.deleteItems([id])
+        if let item = self.dataSource.itemIdentifier(for: indexPath) {
+            // coredata에서 삭제
+            Observable.just(item)
+                .bind(to: viewModel.tapDeleteButton)
+                .disposed(by: disposeBag)
         }
-        self.dataSource.apply(snapshot)
     }
 }
 
@@ -139,12 +128,6 @@ extension Reactive where Base: BookmarkViewController {
     var dataSourceBase: Binder<[Item]> {
         return Binder(base) { base, items in
             base.setdataSource(items: items)
-        }
-    }
-    
-    var bookmarkCount: Binder<Int> {
-        return Binder(base) { base, cnt in
-            base.reloadCollectionView(cnt: cnt)
         }
     }
 }

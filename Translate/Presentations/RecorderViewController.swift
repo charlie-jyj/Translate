@@ -15,20 +15,33 @@ class RecorderViewController: UIViewController {
     enum RecorderStatus {
         case start
         case stop
+        case cancel
         
         var label: String {
             switch self {
             case .start: return "시작하기"
             case .stop: return "번역하기"
+            case .cancel: return "취소하기"
             }
         }
     }
     
     var status: RecorderStatus = .start
     var viewModel: RecorderViewModel?
-    let disposeBag = DisposeBag()
+    var speakerLanguage: Locale?
     private var animationView: AnimationView?
+    let disposeBag = DisposeBag()
     
+    private lazy var textLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .secondarySystemBackground
+        label.textColor = .label
+        label.font = .systemFont(ofSize: 16, weight: .semibold)
+        label.layer.cornerRadius = 20
+        label.numberOfLines = 0
+        return label
+    }()
+   
     private lazy var recorderButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = .secondarySystemBackground
@@ -56,7 +69,11 @@ class RecorderViewController: UIViewController {
     
     func bind(_ viewModel: RecorderViewModel) {
         self.viewModel = viewModel
-        // record 중단 시 event
+       
+        viewModel.recordedText
+            .emit(to: self.rx.presentRecordedText)
+            .disposed(by: disposeBag)
+        
     }
     
     func attribute() {
@@ -67,17 +84,26 @@ class RecorderViewController: UIViewController {
         lottieViewLoad()
         
         [
+            textLabel,
             recorderButton,
             cancelButton
         ].forEach {
             view.addSubview($0)
         }
         
+        textLabel.snp.makeConstraints {
+            $0.leading.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.width.equalTo(40)
+            $0.top.equalTo(animationView!.snp.bottom).inset(24)
+            
+        }
+        
         recorderButton.snp.makeConstraints {
             $0.height.equalTo(60)
             $0.leading.equalToSuperview().inset(16)
             $0.trailing.equalToSuperview().inset(16)
-            $0.top.equalTo(animationView!.snp.bottom).inset(24)
+            $0.top.equalTo(textLabel.snp.bottom).inset(24)
         }
         
         cancelButton.snp.makeConstraints {
@@ -102,13 +128,28 @@ class RecorderViewController: UIViewController {
         animationView!.play()
     }
     
+    func presentTextLabel(text: String) {
+        textLabel.text = text
+    }
+    
     @objc func didTapRecorderButton() {
         cancelButton.isHidden = status == .stop
         status = status == .start ? .stop : .start
         recorderButton.setTitle(status.label, for: .normal)
         
+        guard let recorderButton = viewModel?.tapRecorderButton else { return }
+       
         if status == .start {
             dismiss(animated: true)
+            // recording 완료
+            Observable.just(RecorderStatus.stop)
+                .bind(to: recorderButton)
+                .disposed(by: disposeBag)
+        } else {
+            // recording 시작
+            Observable.just(RecorderStatus.start)
+                .bind(to: recorderButton)
+                .disposed(by: disposeBag)
         }
     }
     
@@ -116,4 +157,12 @@ class RecorderViewController: UIViewController {
         dismiss(animated: true)
     }
 
+}
+
+extension Reactive where Base: RecorderViewController {
+    var presentRecordedText: Binder<String> {
+        return Binder(base) { base, text in
+            base.presentTextLabel(text: text)
+        }
+    }
 }

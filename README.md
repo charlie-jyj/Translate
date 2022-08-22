@@ -22,8 +22,10 @@
 - 0817 bookmark에 읽기 버튼 추가
 - 0818 북마크 버튼 클릭의 이벤트 필요, 삭제 기능 필요 -> swipe 삭제 하고 싶어서 layout 변경 -> 원복
 - 0819 collection view list는 모양 내는 데에 한계가 있다, view model 설계 수정, layout list로 수정
+- 0822 STT 이벤트 바인딩, 북마크 삭제 구현
+- 지저분한 코드 정리 (TOBE)
 - 북마크 저장 성공/실패 시 alert로 알림 (TOBE)
-- STT 이벤트 바인딩 (TOBE)
+
 
 #### iOS
 

@@ -29,7 +29,7 @@ class TabBarController: UITabBarController {
         bookmarkViewController.bind(viewModel.bookmarkViewModel)
         
         Observable.just(true)
-            .bind(to: viewModel.viewdidload)
+            .bind(to: viewModel.viewShouldload)
             .disposed(by: disposeBag)
        
         translateViewController.tabBarItem = UITabBarItem(

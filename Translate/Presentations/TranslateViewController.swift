@@ -152,6 +152,10 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
         viewModel.changeLanguageButton
             .emit(to: self.rx.changeLanguageButton)
             .disposed(by: disposeBag)
+        
+        viewModel.presentRecordedText
+            .emit(to: self.rx.presentRecordedText)
+            .disposed(by: disposeBag)
     }
     
     private func attribute(){
@@ -364,7 +368,14 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
     
     @objc func didTapRecordButton() {
         let vc = RecorderViewController()
-        vc.bind(viewModel.recorderViewModel)
+        
+        // viewmodel, sourceLanguageType 을 함께 initialize
+        guard let sourceTitle = sourceButton.currentTitle else { return }
+        let speakerLanguage = sourceTitle.converToLocale()
+        let recorderViewModel = RecorderViewModel(speechRecognizer: SpeechRecognizer(locale: speakerLanguage), subViewModel: viewModel)
+        
+        vc.speakerLanguage = speakerLanguage
+        vc.bind(recorderViewModel)
         present(vc, animated: true, completion: nil)
     }
 }
@@ -391,6 +402,12 @@ extension Reactive where Base: TranslateViewController {
             } else if buttonStyle.type == .target {
                 base.setTargetButtonText(from: buttonStyle.label)
             }
+        }
+    }
+    
+    var presentRecordedText: Binder<String> {
+        return Binder(base) { base, text in
+            base.presentSourceText(source: text)
         }
     }
     

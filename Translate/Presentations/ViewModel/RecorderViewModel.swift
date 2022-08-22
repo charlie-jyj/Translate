@@ -9,15 +9,50 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-struct RecorderViewModel {
+class RecorderViewModel {
+    var speechRecognizer: SpeechRecognizer
+    let translateViewModel: TranslateViewModel
     let disposeBag = DisposeBag()
-    let speechRecognizer: SpeechRecognizer?
+    
+    // viewModel -> view
+    let recordedText:  Signal<String>
     
     // view -> viewModel
-    let tapLanguageButton = PublishRelay<String>()
+    let tapRecorderButton = PublishRelay<recorderStatus>()
     
-    init() {
-        speechRecognizer = SpeechRecognizer(locale: Locale(identifier: "ko_KR"))
+    // viewModel -> viewModel
+    let transcript = PublishSubject<String>()
+   
+    typealias recorderStatus = RecorderViewController.RecorderStatus
+    
+    init(speechRecognizer: SpeechRecognizer, subViewModel: TranslateViewModel) {
+        self.speechRecognizer = speechRecognizer
+        self.translateViewModel = subViewModel
+        
+        self.recordedText = speechRecognizer.transcript
+            .map { $0 }
+            .asSignal(onErrorJustReturn: "")
+        
+        tapRecorderButton
+            .subscribe(onNext: { [weak self] status in
+                guard let self = self else { return }
+                
+                if status == .start {
+                    speechRecognizer.reset()
+                    speechRecognizer.transcribe()
+                } else if status == .stop {
+                    speechRecognizer.stopTranscribing()
+                    speechRecognizer.transcript
+                        .bind(to: self.translateViewModel.recordedText)
+                        .disposed(by: self.disposeBag)
+                    speechRecognizer.transcript
+                        .bind(to: self.translateViewModel.sourceTextViewModel.documentData)
+                        .disposed(by: self.disposeBag)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        
     }
     
 }

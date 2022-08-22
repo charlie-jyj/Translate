@@ -35,7 +35,7 @@ class CoreDataViewModel {
     let bookmarkViewModel = BookmarkViewModel()
     
     // view -> viewModel
-    let viewdidload = PublishRelay<Bool>()
+    let viewShouldload = PublishRelay<Bool>()
     
     // viewModel -> viewModel
     
@@ -57,22 +57,17 @@ class CoreDataViewModel {
             .disposed(by: disposeBag)
    
         //viewDidLoad 시점에 fetch
-        viewdidload
-            .subscribe(onNext: { (signal) in
+        viewShouldload
+            .subscribe(onNext: { signal in
                 if signal {
                     let completion = {[weak self] (result: FetchItemsResult) -> Void in
                         switch result {
                         case .success(let items):
                             if  let _fetchData = self?.bookmarkViewModel.fetchData,
-                                let _fetchDataCount = self?.bookmarkViewModel.fetchDataCount,
                                 let _isFetched = self?.bookmarkViewModel.isFetched {
                         
                                 _fetchData
                                     .on(.next(items))
-                                
-                                _fetchDataCount
-                                    .on(.next(items.count))
-                                
                                 _isFetched
                                     .on(.next(true))
                             }
@@ -85,6 +80,14 @@ class CoreDataViewModel {
                 } else {
                     print("view did load not occured")
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        // delete button tap 시점에
+        bookmarkViewModel.tapDeleteButton
+            .subscribe(onNext: { [weak self] item in
+                guard let self = self else { return }
+                self.deleteContext(item: item)
             })
             .disposed(by: disposeBag)
         
@@ -157,5 +160,13 @@ class CoreDataViewModel {
         } catch {
             completion(.failure(error))
         }
+    }
+    
+    func deleteContext(item: Item) {
+        context.delete(item)
+        saveContext()
+        Observable.just(true)
+            .bind(to: viewShouldload)
+            .disposed(by: disposeBag)
     }
 }

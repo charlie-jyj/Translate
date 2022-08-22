@@ -16,7 +16,6 @@ struct TranslateViewModel {
   
     //subViewModels
     var sourceTextViewModel = SourceTextViewModel()
-    var recorderViewModel = RecorderViewModel()
     var apiViewModel = APIViewModel()
     
     // viewModel -> view
@@ -24,6 +23,7 @@ struct TranslateViewModel {
     let targetLabelText: Driver<String>
     let languageList: Signal<[LanguageType]>
     let changeLanguageButton: Signal<ButtonStyle>
+    let presentRecordedText: Signal<String>
    
     // view -> viewModel
     let tapLanguageButton = PublishRelay<ButtonType>()
@@ -32,10 +32,16 @@ struct TranslateViewModel {
     let sourceLanguage = BehaviorRelay<LanguageType>(value:.Korean)
     let targetLanguage = BehaviorRelay<LanguageType>(value: .English)
     
+    // viewModel -> vieModel
+    let recordedText = BehaviorRelay<String>(value: "")
+    
     init() {
         sourceLabelText = sourceTextViewModel
             .documentData
-            .asDriver(onErrorJustReturn: "source label fill error")
+            .asDriver(onErrorJustReturn: "")
+        
+        presentRecordedText = recordedText
+            .asSignal(onErrorJustReturn: "")
         
         let languageAllCases = Observable.just(LanguageType.allCases)
         
