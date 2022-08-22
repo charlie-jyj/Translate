@@ -15,7 +15,7 @@ class RecorderViewModel {
     let disposeBag = DisposeBag()
     
     // viewModel -> view
-    let recordedText:  Signal<String>
+    let recordedText:  Driver<String>
     
     // view -> viewModel
     let tapRecorderButton = PublishRelay<recorderStatus>()
@@ -31,7 +31,7 @@ class RecorderViewModel {
         
         self.recordedText = speechRecognizer.transcript
             .map { $0 }
-            .asSignal(onErrorJustReturn: "")
+            .asDriver(onErrorJustReturn: "")
         
         tapRecorderButton
             .subscribe(onNext: { [weak self] status in
@@ -48,6 +48,8 @@ class RecorderViewModel {
                     speechRecognizer.transcript
                         .bind(to: self.translateViewModel.sourceTextViewModel.documentData)
                         .disposed(by: self.disposeBag)
+                } else {
+                    speechRecognizer.stopTranscribing()
                 }
             })
             .disposed(by: disposeBag)

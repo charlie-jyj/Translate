@@ -114,7 +114,6 @@ class BookmarkViewController: UICollectionViewController {
     }
  
     private func deleteItem(at indexPath: IndexPath) {
-        var snapshot = self.dataSource.snapshot()
         if let item = self.dataSource.itemIdentifier(for: indexPath) {
             // coredata에서 삭제
             Observable.just(item)
@@ -139,5 +138,15 @@ extension BookmarkViewController {
             return proposedIndexPath
         }
         return originalIndexPath
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if let item = self.dataSource.itemIdentifier(for: indexPath) {
+            let text = item.bookmark.targetContent
+            let languageType = item.bookmark.targetLanguage.convertTitleToLanguageType()
+            let speechSynthesizer = SpeechSynthesizer(text: text,
+                                                      languageType: languageType)
+            speechSynthesizer.speak()
+        }
     }
 }

@@ -34,11 +34,11 @@ class RecorderViewController: UIViewController {
     
     private lazy var textLabel: UILabel = {
         let label = UILabel()
-        label.backgroundColor = .secondarySystemBackground
+        label.font = .systemFont(ofSize: 12, weight: .semibold)
+        label.backgroundColor = .systemBackground
         label.textColor = .label
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.layer.cornerRadius = 20
         label.numberOfLines = 0
+        label.isHidden = true
         return label
     }()
    
@@ -71,7 +71,7 @@ class RecorderViewController: UIViewController {
         self.viewModel = viewModel
        
         viewModel.recordedText
-            .emit(to: self.rx.presentRecordedText)
+            .drive(self.rx.presentRecordedText)
             .disposed(by: disposeBag)
         
     }
@@ -84,26 +84,19 @@ class RecorderViewController: UIViewController {
         lottieViewLoad()
         
         [
-            textLabel,
             recorderButton,
-            cancelButton
+            cancelButton,
+            textLabel,
         ].forEach {
             view.addSubview($0)
         }
         
-        textLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(16)
-            $0.trailing.equalToSuperview().inset(16)
-            $0.width.equalTo(40)
-            $0.top.equalTo(animationView!.snp.bottom).inset(24)
-            
-        }
         
         recorderButton.snp.makeConstraints {
             $0.height.equalTo(60)
             $0.leading.equalToSuperview().inset(16)
             $0.trailing.equalToSuperview().inset(16)
-            $0.top.equalTo(textLabel.snp.bottom).inset(24)
+            $0.top.equalTo(animationView!.snp.bottom).inset(24)
         }
         
         cancelButton.snp.makeConstraints {
@@ -112,6 +105,15 @@ class RecorderViewController: UIViewController {
             $0.trailing.equalToSuperview().inset(16)
             $0.top.equalTo(recorderButton.snp.bottom).offset(24)
         }
+        
+        textLabel.snp.makeConstraints {
+            $0.height.equalTo(60)
+            $0.leading.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.top.equalTo(cancelButton.snp.bottom).offset(24)
+            
+        }
+        
     }
     
     private func lottieViewLoad() {
@@ -122,8 +124,8 @@ class RecorderViewController: UIViewController {
         animationView!.animationSpeed = 0.5
         view.addSubview(animationView!)
         animationView!.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(24)
-            $0.trailing.equalToSuperview().inset(24)
+            $0.leading.equalToSuperview().inset(48)
+            $0.trailing.equalToSuperview().inset(48)
         }
         animationView!.play()
     }
@@ -134,6 +136,7 @@ class RecorderViewController: UIViewController {
     
     @objc func didTapRecorderButton() {
         cancelButton.isHidden = status == .stop
+        textLabel.isHidden = status == .stop
         status = status == .start ? .stop : .start
         recorderButton.setTitle(status.label, for: .normal)
         
@@ -154,6 +157,10 @@ class RecorderViewController: UIViewController {
     }
     
     @objc func didTapCancelButton() {
+        guard let recorderButton = viewModel?.tapRecorderButton else { return }
+        Observable.just(RecorderStatus.cancel)
+            .bind(to: recorderButton)
+            .disposed(by: disposeBag)
         dismiss(animated: true)
     }
 

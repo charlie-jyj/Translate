@@ -154,7 +154,7 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
             .disposed(by: disposeBag)
         
         viewModel.presentRecordedText
-            .emit(to: self.rx.presentRecordedText)
+            .drive(self.rx.presentRecordedText)
             .disposed(by: disposeBag)
     }
     
@@ -251,6 +251,9 @@ class TranslateViewController: UIViewController, SourceTextViewDelegate {
     func presentSourceText(source: String) {
         if source != "" {
             sourceTextLabel.text = source
+            sourceTextLabel.textColor = .label
+        } else if sourceTextLabel.text != sourcePlaceholderText {
+            sourceTextLabel.text = "\(sourceTextLabel.text!)"
             sourceTextLabel.textColor = .label
         } else {
             sourceTextLabel.text = sourcePlaceholderText
@@ -376,6 +379,7 @@ extension TranslateViewController: UIToolTipInteractionDelegate {
         
         vc.speakerLanguage = speakerLanguage
         vc.bind(recorderViewModel)
+        vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
 }

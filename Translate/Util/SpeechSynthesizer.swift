@@ -10,21 +10,18 @@ import AVFoundation
 
 class SpeechSynthesizer {
     private(set) var utterance: AVSpeechUtterance?
-    private(set) var language: String?
+    let synthesizer = AVSpeechSynthesizer()
     
     init(text source: String, languageType: LanguageType) {
         utterance = AVSpeechUtterance(string: source)
-        language = languageType.convertToVoiceCode()
+        let language = languageType.convertToVoiceCode()
+        self.utterance?.voice = AVSpeechSynthesisVoice(language: language)
+        self.utterance?.rate = AVSpeechUtteranceDefaultSpeechRate
     }
     
     func speak() {
-        guard let utterance = utterance,
-              let language = language
+        guard let utterance = utterance
         else { return }
-        
-        utterance.voice = AVSpeechSynthesisVoice(language: language)
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        let synthesizer = AVSpeechSynthesizer()
         synthesizer.speak(utterance)
     }
 }

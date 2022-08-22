@@ -23,7 +23,7 @@ struct TranslateViewModel {
     let targetLabelText: Driver<String>
     let languageList: Signal<[LanguageType]>
     let changeLanguageButton: Signal<ButtonStyle>
-    let presentRecordedText: Signal<String>
+    let presentRecordedText: Driver<String>
    
     // view -> viewModel
     let tapLanguageButton = PublishRelay<ButtonType>()
@@ -41,7 +41,7 @@ struct TranslateViewModel {
             .asDriver(onErrorJustReturn: "")
         
         presentRecordedText = recordedText
-            .asSignal(onErrorJustReturn: "")
+            .asDriver(onErrorJustReturn: "")
         
         let languageAllCases = Observable.just(LanguageType.allCases)
         
